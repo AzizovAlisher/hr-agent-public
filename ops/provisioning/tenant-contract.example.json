@@ -1,0 +1,49 @@
+{
+  "organization": {
+    "name": "Example Pilot Customer",
+    "slug": "example-pilot",
+    "candidate_retention_days": 365
+  },
+  "initial_admin": {
+    "email": "admin@example.com",
+    "locale": "en"
+  },
+  "entitlements": {
+    "active_jobs": {
+      "limit": 25,
+      "period": "contract"
+    },
+    "ai_cost_microusd": {
+      "limit": 100000000,
+      "period": "month"
+    },
+    "ai_tokens": {
+      "limit": 10000000,
+      "period": "month"
+    },
+    "assessment_starts": {
+      "limit": 1000,
+      "period": "month"
+    },
+    "candidate_import_rows": {
+      "limit": 50000,
+      "period": "month"
+    },
+    "candidates": {
+      "limit": 10000,
+      "period": "contract"
+    },
+    "integration_runs": {
+      "limit": 10000,
+      "period": "month"
+    },
+    "seats": {
+      "limit": 25,
+      "period": "contract"
+    },
+    "storage_bytes": {
+      "limit": 10737418240,
+      "period": "contract"
+    }
+  }
+}

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Открытые вакансии</title>
+    <style>
+      :root { color-scheme: light; font-family: Inter, system-ui, sans-serif; }
+      body { margin: 0; background: #f7f8fa; color: #17191c; }
+      main { width: min(920px, calc(100% - 32px)); margin: 56px auto; }
+      h1 { font-size: clamp(32px, 5vw, 54px); margin: 0 0 12px; }
+      .intro { color: #60656f; margin: 0 0 32px; }
+      .list { display: grid; gap: 14px; }
+      .job { padding: 24px; border: 1px solid #dfe2e7; border-radius: 18px; background: white; }
+      .job h2 { margin: 0 0 10px; font-size: 22px; }
+      .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; color: #60656f; }
+      .meta span { padding: 5px 9px; border-radius: 999px; background: #f1f3f5; }
+      .job p { color: #3f444c; line-height: 1.55; }
+      .apply, .more { display: inline-flex; padding: 10px 15px; border: 0; border-radius: 10px; background: #17191c; color: white; text-decoration: none; cursor: pointer; }
+      .more { margin-top: 20px; }
+      .more[hidden] { display: none; }
+      .state { padding: 24px; border-radius: 14px; background: white; color: #60656f; }
+      .state.error { color: #a12828; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Открытые вакансии</h1>
+      <p class="intro">Присоединяйтесь к нашей команде.</p>
+      <div id="status" class="state" role="status">Загружаем вакансии…</div>
+      <section id="jobs" class="list" aria-live="polite"></section>
+      <button id="more" class="more" type="button" hidden>Показать еще</button>
+    </main>
+
+    <script>
+      const API_BASE = "http://localhost:8000";
+      const ORGANIZATION_SLUG = "demo";
+      const PAGE_SIZE = 20;
+
+      const statusNode = document.querySelector("#status");
+      const jobsNode = document.querySelector("#jobs");
+      const moreButton = document.querySelector("#more");
+      let nextCursor = null;
+
+      function addTextElement(parent, tag, text) {
+        const element = document.createElement(tag);
+        element.textContent = text;
+        parent.appendChild(element);
+        return element;
+      }
+
+      function renderJob(job) {
+        const article = document.createElement("article");
+        article.className = "job";
+        addTextElement(article, "h2", job.title);
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+        for (const value of [job.location, job.work_format, job.employment_type]) {
+          if (value) addTextElement(meta, "span", value);
+        }
+        if (meta.childElementCount) article.appendChild(meta);
+
+        if (job.description) addTextElement(article, "p", job.description);
+        const apply = addTextElement(article, "a", "Откликнуться");
+        apply.className = "apply";
+        apply.href = job.apply_url;
+        article.appendChild(apply);
+        jobsNode.appendChild(article);
+      }
+
+      async function loadJobs(cursor = null) {
+        moreButton.disabled = true;
+        if (!jobsNode.childElementCount) {
+          statusNode.hidden = false;
+          statusNode.classList.remove("error");
+          statusNode.textContent = "Загружаем вакансии…";
+        }
+
+        const url = new URL(
+          `/public/v1/careers/${ORGANIZATION_SLUG}/positions`,
+          API_BASE,
+        );
+        url.searchParams.set("limit", String(PAGE_SIZE));
+        if (cursor) url.searchParams.set("cursor", cursor);
+
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const page = await response.json();
+          page.items.forEach(renderJob);
+          nextCursor = page.next_cursor;
+          moreButton.hidden = !nextCursor;
+          statusNode.hidden = page.total > 0;
+          if (page.total === 0) statusNode.textContent = "Сейчас открытых вакансий нет.";
+        } catch (error) {
+          statusNode.hidden = false;
+          statusNode.classList.add("error");
+          statusNode.textContent = "Не удалось загрузить вакансии. Попробуйте позже.";
+          console.error("Careers API request failed", error);
+        } finally {
+          moreButton.disabled = false;
+        }
+      }
+
+      moreButton.addEventListener("click", () => loadJobs(nextCursor));
+      loadJobs();
+    </script>
+  </body>
+</html>

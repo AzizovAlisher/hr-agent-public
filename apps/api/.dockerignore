@@ -1,0 +1,13 @@
+.env
+.env.*
+.pytest_cache
+.ruff_cache
+.venv
+__pycache__
+*.py[cod]
+tests
+storage
+!app/storage
+!app/storage/**
+app/storage/**/__pycache__
+app/storage/**/*.py[cod]

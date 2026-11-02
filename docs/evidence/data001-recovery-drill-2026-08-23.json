@@ -1,0 +1,39 @@
+{
+  "acceptance_id": "RECOVERY-001",
+  "release_revision": "pending-integrated-final-head",
+  "environment": "local reference PostgreSQL plus complete legacy object tree",
+  "backup_id": "hr-agent-20260822T215025Z-9ee73409",
+  "database": {
+    "candidate_rls_enabled": true,
+    "candidate_rls_forced": true,
+    "migration_head": "d9f1a3c5e7b2",
+    "organization_count": 1,
+    "required_roles_match": true,
+    "runtime_public_schema_usage": true,
+    "security_schema_owner": "hr_agent_broker",
+    "worker_public_schema_usage": true
+  },
+  "format": "hr-agent-recovery-evidence-v1",
+  "objects": {
+    "bytes": 36472489,
+    "checksums_match": true,
+    "count": 128
+  },
+  "rollback_verified": true,
+  "rpo_seconds": 79.733,
+  "rpo_target_seconds": 86400,
+  "rto_seconds": 2.538,
+  "rto_target_seconds": 14400,
+  "status": "pass",
+  "target_database": "hr_data001_restore_20260823",
+  "target_object_kind": "local",
+  "verified_at": "2026-08-22T21:51:49.044457Z",
+  "independent_retest": {
+    "archive_authentication": "pass",
+    "database_restore": "pass",
+    "all_object_checksums": "pass",
+    "security_contract": "pass",
+    "target_cleanup": "pass"
+  },
+  "scope_note": "This is the complete pre-completion local object tree, not the smaller synthetic recovery fixture. A separate S3/MinIO drill is required for the S3 deployment topology."
+}

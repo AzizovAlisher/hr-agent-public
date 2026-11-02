@@ -1,0 +1,16 @@
+# Isolation overlay for the repeatable local release-topology gate.
+#
+# Run with a unique Compose project name and scale API/worker replicas without
+# colliding with a developer's published ports. Health and smoke checks run on
+# the project network (see docs/OPERATIONS_RUNBOOK.md).
+services:
+  postgres:
+    ports: !reset []
+  valkey:
+    ports: !reset []
+  minio:
+    ports: !reset []
+  api:
+    ports: !reset []
+  web:
+    ports: !reset []

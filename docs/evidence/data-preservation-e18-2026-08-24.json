@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-08-24T06:42:11Z",
+  "scope": {
+    "runtime_database": "recruitment_v2_preview",
+    "cutover_only": true,
+    "source_product_database_targeted": false,
+    "source_product_database": "recruitment_v2"
+  },
+  "backup": {
+    "artifact": "recruitment_v2_preview-pre-e18-20260824T042322Z.dump",
+    "format": "PostgreSQL custom archive",
+    "bytes": 5139507,
+    "mode": "0600",
+    "sha256": "696ca9d74d447c155ce74412e5a7920d00d6081e2cac04c72830d89a908b07a4",
+    "pg_restore_list_valid": true,
+    "isolated_restore_valid": true
+  },
+  "migration": {
+    "from": "a63d9e4b7c12",
+    "to": "e18c4f6a0b32",
+    "applied": [
+      "b74e1d9c0a32",
+      "c85f2a6d1e43",
+      "d96a4c8e2f70",
+      "e07b3d5f9a21",
+      "e18c4f6a0b32"
+    ],
+    "alembic_check": "No new upgrade operations detected",
+    "rehearsal_database": "hr_preview_e18_dryrun_20260824_0944",
+    "rehearsal_completed_before_cutover": true
+  },
+  "preserved_counts": {
+    "organizations": 1,
+    "users": 2,
+    "candidates_total": 84,
+    "candidates_active": 82,
+    "positions": 105,
+    "scores": 1158,
+    "applications": 1158,
+    "application_stage_events": 1158,
+    "application_evaluations": 2316,
+    "interviews": 17,
+    "candidate_notes": 1,
+    "candidate_activities": 1280,
+    "private_objects": 0
+  },
+  "reconciliation": {
+    "immediate_pre_and_post_counts_equal": true,
+    "e18_whole_row_sha256_matches_rehearsal": true,
+    "whole_row_sha256": {
+      "candidate_activities": "b52ac9251fe6c4e5b2ff31d0716c8fbda653ee7aace93539c91455501d4a9b4c",
+      "applications": "b4eb9ed4098abd0f78595eb19557352f16fd1a3a17586e8c1b65db72104f2391",
+      "candidates": "db18009c5ee603c48a49b437f09c9d5beec4d9f6fed4c340abf948a86d43eb66",
+      "application_evaluations": "03292a82389599fd8a6a946ec143f6546d69d3968849e35cbbc8a7643482269e",
+      "interviews": "e5bb0b582a140840b80d833492e58499c9892b50d28e1c928f79181834974251",
+      "candidate_notes": "bbb52bf5928f41268136b7eb0bd94628b3edbe8e7907ca44751933af30d335d1",
+      "positions": "d0a8f7b6e3376e0e25fb74b340fc3059b51f6cb3dbb2455b245af9858dd8b69b",
+      "scores": "de5b2d89f6c6f0df850c9473af4417b51393f353b52785d7c7e95f4c7ed9faf5",
+      "application_stage_events": "31b8ec48130833f16cce8f6ed0876686aca165119e452f09a4ea14a876ff0ac5"
+    },
+    "pre_cutover_backup_subset_audit": {
+      "pre_existing_tables_checked": 115,
+      "missing_tables": 0,
+      "tables_with_row_count_loss": 0,
+      "expected_mutable_or_sanitized_tables": {
+        "auth_refresh_sessions": {
+          "pre": 5,
+          "post": 5,
+          "unmatched_pre_rows": 1,
+          "reason": "active session rotation after backup"
+        },
+        "auth_refresh_tokens": {
+          "pre": 37,
+          "post": 42,
+          "unmatched_pre_rows": 1,
+          "reason": "active session rotation and new preview logins after backup"
+        },
+        "candidates": {
+          "pre": 84,
+          "post": 84,
+          "unmatched_pre_rows": 9,
+          "reason": "c85f2a6d1e43 replaced legacy public source_ref contact text with deterministic opaque identifiers; authoritative contacts and application provenance remain"
+        },
+        "private_storage_reconciliation_cursors": {
+          "pre": 3,
+          "post": 3,
+          "unmatched_pre_rows": 3,
+          "reason": "runtime reconciliation progress"
+        },
+        "worker_heartbeats": {
+          "pre": 7,
+          "post": 7,
+          "unmatched_pre_rows": 1,
+          "reason": "runtime heartbeat progression"
+        },
+        "worker_queue_leases": {
+          "pre": 1,
+          "post": 1,
+          "unmatched_pre_rows": 1,
+          "reason": "runtime lease progression"
+        }
+      },
+      "append_only_audit_logs": {
+        "pre": 270,
+        "post_at_audit": 305,
+        "all_pre_rows_retained": true
+      }
+    }
+  },
+  "file_preservation": {
+    "files_before": 173,
+    "files_after": 173,
+    "unchanged_count": true,
+    "current_layout_counts": {
+      "ai_uploads": 37,
+      "assessment_files": 5,
+      "cvs": 64,
+      "private": 67
+    },
+    "separate_encrypted_e14_archive_retained": true
+  },
+  "tenant_and_application_integrity": {
+    "protected_tables": 113,
+    "rls_enabled_and_forced": 113,
+    "privacy_write_gate_triggers": 112,
+    "scores_without_application": 0,
+    "applications_without_score": 0,
+    "mismatched_application_score_relationships": 0,
+    "applications_without_stage_event": 0,
+    "duplicate_cycle_numbers": 0,
+    "duplicate_active_applications": 0
+  },
+  "live_preview": {
+    "url": "http://127.0.0.1:3100",
+    "api_readiness": 200,
+    "web_health": 200,
+    "schema": "e18c4f6a0b32",
+    "authenticated_identity": "preview@hrpilot.app",
+    "legacy_tenant_uuid": "00000000-0000-0000-0000-000000000001",
+    "legacy_tenant_uuid_regression": {
+      "local_browser_profiles": 4,
+      "passed": 4,
+      "failed": 0
+    },
+    "english_candidate_count_rendered": 82,
+    "english_position_count_rendered": 105,
+    "russian_candidate_count_rendered": 82,
+    "russian_position_count_rendered": 105
+  },
+  "result": "PASS: the E18 preview is running and prior business records and files are retained; expected security/session/runtime evolution is explicitly accounted for."
+}

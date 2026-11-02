@@ -1,0 +1,551 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+@custom-variant data-open {
+  &:where([data-state="open"]),
+  &:where([data-open]:not([data-open="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-closed {
+  &:where([data-state="closed"]),
+  &:where([data-closed]:not([data-closed="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-disabled {
+  &:where([data-disabled="true"]),
+  &:where([data-disabled]:not([data-disabled="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-active {
+  &:where([data-state="active"]),
+  &:where([data-active]:not([data-active="false"])) {
+    @slot;
+  }
+}
+@custom-variant data-horizontal {
+  &:where([data-orientation="horizontal"]) {
+    @slot;
+  }
+}
+@custom-variant data-vertical {
+  &:where([data-orientation="vertical"]) {
+    @slot;
+  }
+}
+
+@theme inline {
+  /* Base */
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+
+  /* Surfaces */
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-hover: var(--bg-hover);
+  --color-bg-active: var(--bg-active);
+
+  /* Text */
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+  --color-text-faint: var(--text-faint);
+
+  /* Borders */
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--border);
+  --color-ring: var(--accent);
+
+  /* Brand accent */
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--bg);
+  --color-accent-muted: var(--accent-muted);
+  --color-accent-border: var(--accent-border);
+
+  /* Score tones */
+  --color-score-high: var(--score-high);
+  --color-score-mid: var(--score-mid);
+  --color-score-low: var(--score-low);
+
+  /* Requirement category tints */
+  --color-tag-tech: var(--tag-tech);
+  --color-tag-tech-bg: var(--tag-tech-bg);
+  --color-tag-tech-border: var(--tag-tech-border);
+  --color-tag-salary: var(--tag-salary);
+  --color-tag-salary-bg: var(--tag-salary-bg);
+  --color-tag-salary-border: var(--tag-salary-border);
+  --color-tag-location: var(--tag-location);
+  --color-tag-location-bg: var(--tag-location-bg);
+  --color-tag-location-border: var(--tag-location-border);
+  --color-tag-seniority: var(--tag-seniority);
+  --color-tag-seniority-bg: var(--tag-seniority-bg);
+  --color-tag-seniority-border: var(--tag-seniority-border);
+  --color-tag-language: var(--tag-language);
+  --color-tag-language-bg: var(--tag-language-bg);
+  --color-tag-language-border: var(--tag-language-border);
+  --color-tag-format: var(--tag-format);
+  --color-tag-format-bg: var(--tag-format-bg);
+  --color-tag-format-border: var(--tag-format-border);
+  --color-tag-education: var(--tag-education);
+  --color-tag-education-bg: var(--tag-education-bg);
+  --color-tag-education-border: var(--tag-education-border);
+
+  /* shadcn back-compat (so existing dialog/dropdown/sonner keep working) */
+  --color-card: var(--bg-elevated);
+  --color-card-foreground: var(--text);
+  --color-popover: var(--bg-elevated);
+  --color-popover-foreground: var(--text);
+  --color-secondary: var(--bg-elevated);
+  --color-secondary-foreground: var(--text);
+  --color-muted: var(--bg-hover);
+  --color-muted-foreground: var(--text-muted);
+  --color-accent: var(--bg-hover);
+  --color-accent-foreground: var(--text);
+  --color-destructive: var(--score-low);
+  --color-sidebar: var(--bg);
+  --color-sidebar-foreground: var(--text);
+  --color-sidebar-primary: var(--accent);
+  --color-sidebar-primary-foreground: var(--bg);
+  --color-sidebar-accent: var(--bg-hover);
+  --color-sidebar-accent-foreground: var(--text);
+  --color-sidebar-border: var(--border);
+  --color-sidebar-ring: var(--accent);
+  --color-chart-1: var(--score-high);
+  --color-chart-2: var(--score-mid);
+  --color-chart-3: var(--score-low);
+  --color-chart-4: var(--text-subtle);
+  --color-chart-5: var(--text-faint);
+
+  --font-sans: var(--font-geist-sans), var(--font-cyrillic), -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-heading: var(--font-geist-sans), var(--font-cyrillic), -apple-system,
+    sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+/* === DARK (default) === */
+:root,
+.dark {
+  --bg: oklch(0.135 0 0);
+  --bg-elevated: oklch(0.17 0 0);
+  --bg-hover: oklch(0.20 0 0);
+  --bg-active: oklch(0.23 0 0);
+
+  --border: oklch(0.235 0 0);
+  --border-strong: oklch(0.32 0 0);
+
+  --text: oklch(0.985 0 0);
+  --text-muted: oklch(0.72 0 0);
+  --text-subtle: oklch(0.65 0 0);
+  --text-faint: oklch(0.59 0 0);
+
+  --accent: oklch(0.7 0.16 245);
+  --accent-hover: oklch(0.74 0.17 245);
+  --accent-muted: oklch(0.7 0.16 245 / 0.14);
+  --accent-border: oklch(0.7 0.16 245 / 0.32);
+
+  --score-high: oklch(0.7 0.15 162);
+  --score-mid: oklch(0.78 0.14 75);
+  --score-low: oklch(0.68 0.18 25);
+
+  /* Requirement category tints — used to colour-code chips on position
+     cards. Each category has three values: solid (for text), translucent
+     (for chip background), and a slightly stronger translucent (for border). */
+  --tag-tech: oklch(0.78 0.15 162);          /* emerald */
+  --tag-tech-bg: oklch(0.78 0.15 162 / 0.10);
+  --tag-tech-border: oklch(0.78 0.15 162 / 0.32);
+
+  --tag-salary: oklch(0.85 0.15 80);         /* amber */
+  --tag-salary-bg: oklch(0.85 0.15 80 / 0.12);
+  --tag-salary-border: oklch(0.85 0.15 80 / 0.34);
+
+  --tag-location: oklch(0.78 0.13 225);      /* sky */
+  --tag-location-bg: oklch(0.78 0.13 225 / 0.10);
+  --tag-location-border: oklch(0.78 0.13 225 / 0.32);
+
+  --tag-seniority: oklch(0.78 0.16 295);     /* violet */
+  --tag-seniority-bg: oklch(0.78 0.16 295 / 0.12);
+  --tag-seniority-border: oklch(0.78 0.16 295 / 0.34);
+
+  --tag-language: oklch(0.78 0.16 15);       /* rose */
+  --tag-language-bg: oklch(0.78 0.16 15 / 0.10);
+  --tag-language-border: oklch(0.78 0.16 15 / 0.32);
+
+  --tag-format: oklch(0.8 0.13 195);         /* teal */
+  --tag-format-bg: oklch(0.8 0.13 195 / 0.10);
+  --tag-format-border: oklch(0.8 0.13 195 / 0.32);
+
+  --tag-education: oklch(0.78 0.14 270);     /* indigo */
+  --tag-education-bg: oklch(0.78 0.14 270 / 0.10);
+  --tag-education-border: oklch(0.78 0.14 270 / 0.32);
+
+  --radius: 8px;
+}
+
+/* === LIGHT === */
+.light {
+  --bg: oklch(0.99 0 0);
+  --bg-elevated: oklch(1 0 0);
+  --bg-hover: oklch(0.965 0 0);
+  --bg-active: oklch(0.94 0 0);
+
+  --border: oklch(0.92 0 0);
+  --border-strong: oklch(0.85 0 0);
+
+  --text: oklch(0.18 0 0);
+  --text-muted: oklch(0.42 0 0);
+  --text-subtle: oklch(0.48 0 0);
+  --text-faint: oklch(0.54 0 0);
+
+  --accent: oklch(0.55 0.2 245);
+  --accent-hover: oklch(0.5 0.21 245);
+  --accent-muted: oklch(0.55 0.2 245 / 0.12);
+  --accent-border: oklch(0.55 0.2 245 / 0.28);
+
+  /* Light-mode tints — slightly darker base + lower alphas so text stays
+     readable on light backgrounds. */
+  --tag-tech: oklch(0.5 0.16 162);
+  --tag-tech-bg: oklch(0.5 0.16 162 / 0.08);
+  --tag-tech-border: oklch(0.5 0.16 162 / 0.24);
+
+  --tag-salary: oklch(0.55 0.17 75);
+  --tag-salary-bg: oklch(0.55 0.17 75 / 0.10);
+  --tag-salary-border: oklch(0.55 0.17 75 / 0.28);
+
+  --tag-location: oklch(0.5 0.16 225);
+  --tag-location-bg: oklch(0.5 0.16 225 / 0.08);
+  --tag-location-border: oklch(0.5 0.16 225 / 0.24);
+
+  --tag-seniority: oklch(0.5 0.18 295);
+  --tag-seniority-bg: oklch(0.5 0.18 295 / 0.10);
+  --tag-seniority-border: oklch(0.5 0.18 295 / 0.28);
+
+  --tag-language: oklch(0.55 0.18 15);
+  --tag-language-bg: oklch(0.55 0.18 15 / 0.08);
+  --tag-language-border: oklch(0.55 0.18 15 / 0.26);
+
+  --tag-format: oklch(0.5 0.14 195);
+  --tag-format-bg: oklch(0.5 0.14 195 / 0.08);
+  --tag-format-border: oklch(0.5 0.14 195 / 0.26);
+
+  --tag-education: oklch(0.5 0.15 270);
+  --tag-education-bg: oklch(0.5 0.15 270 / 0.08);
+  --tag-education-border: oklch(0.5 0.15 270 / 0.26);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply font-sans;
+    font-feature-settings: "cv11", "ss01", "ss03";
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  ::selection {
+    background: var(--accent-muted);
+    color: var(--text);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--border-strong);
+  }
+
+  .font-mono {
+    font-feature-settings: "zero", "tnum";
+  }
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+}
+
+.skip-link {
+  position: fixed;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 100;
+  transform: translateY(calc(-100% - 1rem));
+  border: 1px solid var(--accent-border);
+  border-radius: 0.5rem;
+  background: var(--bg-elevated);
+  color: var(--text);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.25);
+  transition: transform 120ms ease-out;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes barFill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes reveal {
+  from {
+    transform: translateY(4px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes drift-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.bar-fill {
+  transform-origin: left;
+  animation: barFill 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.reveal {
+  /* Keep text at its final contrast throughout the entrance. Fading the
+     entire subtree temporarily blends foreground colours into the card
+     background and can drop otherwise compliant copy below WCAG contrast. */
+  animation: reveal 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.typing-dot {
+  animation: typing 1.4s ease-in-out infinite;
+}
+
+.pulse-soft {
+  animation: pulse-soft 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.pulse-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0;
+  animation: pulse-ring 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+.count-up {
+  animation: count-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.drift-in {
+  animation: drift-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.spin-slow {
+  animation: spin-slow 2.4s linear infinite;
+}
+
+/* Sonner's default entrance fades the entire rich-colour toast from zero
+   opacity. During that transition the composited title can fall below 4.5:1,
+   which is both visible on small screens and detected nondeterministically by
+   assistive tooling. Keep the spatial motion, but reveal the accessible final
+   colours atomically. */
+[data-sonner-toast].cn-toast {
+  transition:
+    transform 200ms,
+    height 200ms,
+    box-shadow 200ms;
+}
+
+/* Shimmer background — for skeletons & loading states. */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 0%,
+    var(--bg-hover) 40%,
+    var(--bg-elevated) 80%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* Reusable "card lift" — adds a subtle elevation + accent line on hover.
+   Compose with .group on the parent. */
+.lift-card {
+  position: relative;
+  transition:
+    transform 0.18s cubic-bezier(0.32, 0.72, 0, 1),
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.22s ease;
+}
+.lift-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--accent) 50%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  pointer-events: none;
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+.lift-card:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 0 var(--border-strong),
+    0 12px 24px -16px rgba(0, 0, 0, 0.55);
+}
+.lift-card:hover::before {
+  opacity: 0.7;
+}
+
+/* Press feedback for interactive elements — applied to any class composing
+   `.press`. The 1% scale-down reads as tactile without becoming a button-jump. */
+.press {
+  transition: transform 0.08s ease;
+}
+.press:active {
+  transform: scale(0.985);
+}
+
+/* Subtle dot-grid backdrop — used on empty states to add texture without
+   adding visual weight. Honours both themes via currentColor on the host. */
+.dot-grid {
+  background-image: radial-gradient(
+    currentColor 1px,
+    transparent 1px
+  );
+  background-size: 12px 12px;
+  background-position: 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-delay: 0ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-delay: 0ms !important;
+    transition-duration: 1ms !important;
+  }
+
+  .lift-card:hover,
+  .press:active {
+    transform: none;
+  }
+}

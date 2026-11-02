@@ -1,0 +1,20 @@
+{
+  "Rules": [
+    {
+      "ID": "expire-encrypted-hr-agent-recovery-archives",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "hr-agent-recovery/"
+      },
+      "Expiration": {
+        "Days": 35
+      },
+      "NoncurrentVersionExpiration": {
+        "NoncurrentDays": 35
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+groups:
+  - name: hr-agent-availability
+    rules:
+      - alert: HRAgentMetricsTargetDown
+        expr: up{job="hr-agent-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: HR Agent metrics target is unavailable
+          description: Prometheus has been unable to scrape an API replica for two minutes.
+
+      - alert: HRAgentNotReady
+        expr: hr_readiness_overall_ok == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: HR Agent dependency readiness is failing
+          description: At least one database, migration, storage, rate-limit, worker, queue, or tenant-isolation dependency is failed.
+
+      - alert: HRAgentReadinessMetricsMissing
+        expr: absent(hr_readiness_overall_ok)
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: HR Agent readiness telemetry is missing
+          description: The target is scrapeable but has stopped publishing the authoritative readiness gauge.
+
+      - alert: HRAgentDependencySnapshotFailed
+        expr: hr_observability_snapshot_success == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: HR Agent could not refresh dependency telemetry
+          description: The metrics endpoint is available, but its dependency snapshot failed closed.
+
+      - alert: HRAgentMalwareSignaturesStale
+        expr: hr_malware_signature_age_seconds > 172800
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: HR Agent malware signatures are stale
+          description: The ClamAV signature database is older than the 48-hour pilot safety limit.
+
+  - name: hr-agent-http
+    rules:
+      - alert: HRAgentHighServerErrorRate
+        expr: |
+          sum(rate(hr_http_requests_total{status_class="5xx"}[5m]))
+          /
+          clamp_min(sum(rate(hr_http_requests_total[5m])), 0.001)
+          > 0.02
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: HR Agent API 5xx rate exceeds 2%
+          description: The aggregate server-error ratio has exceeded the pilot error budget for ten minutes.
+
+      - alert: HRAgentApiP95LatencyHigh
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (rate(hr_http_request_duration_seconds_bucket[10m]))
+          ) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: HR Agent API p95 latency exceeds 500 ms
+          description: Aggregate request latency is above the indexed-read pilot target.
+
+  - name: hr-agent-durable-work
+    rules:
+      - alert: HRAgentQueueBacklogAging
+        expr: max by (queue) (hr_queue_oldest_due_age_seconds) > 300
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: HR Agent durable queue is delayed
+          description: Queue {{ $labels.queue }} has due work older than five minutes.
+
+      - alert: HRAgentQueueBacklogCritical
+        expr: max by (queue) (hr_queue_oldest_due_age_seconds) > 900
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: HR Agent durable queue age is critical
+          description: Queue {{ $labels.queue }} has due work older than fifteen minutes.
+
+      - alert: HRAgentDeadLetterWork
+        expr: sum by (queue) (hr_queue_dead_letter_jobs) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: HR Agent durable work reached dead letter
+          description: Queue {{ $labels.queue }} contains work requiring inspection or controlled replay.
+
+      - alert: HRAgentWorkerCoverageMissing
+        expr: hr_worker_missing_queues > 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: HR Agent required queue has no fresh worker
+          description: At least one enabled durable queue is not covered by a recent worker heartbeat.
+
+      - alert: HRAgentWorkersAbsent
+        expr: hr_worker_fresh_replicas < 1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: HR Agent has no fresh worker replica
+          description: No dedicated worker heartbeat is within the configured freshness window.
+
+  - name: hr-agent-providers
+    rules:
+      - alert: HRAgentProviderFailures
+        expr: |
+          sum by (provider, operation) (
+            increase(hr_provider_operations_total{outcome=~"failed|degraded"}[10m])
+          ) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: HR Agent provider operations are failing
+          description: Provider {{ $labels.provider }} / {{ $labels.operation }} has repeated failures or degraded results.
+
+      - alert: HRAgentWorkerProviderFailures
+        expr: |
+          max by (provider, operation) (
+            increase(hr_worker_provider_operations_total{outcome=~"failed|degraded"}[10m])
+          ) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: HR Agent worker provider operations are failing
+          description: Dedicated workers report repeated failures for {{ $labels.provider }} / {{ $labels.operation }}.
+
+      - alert: HRAgentProviderConnectionsDegraded
+        expr: sum by (provider) (hr_provider_connections{state=~"degraded|expired"}) > 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: HR Agent provider connection is degraded
+          description: Provider {{ $labels.provider }} has one or more degraded or expired connections.
+
+      - alert: HRAgentProviderLatencyHigh
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (provider, operation, le) (
+              rate(hr_provider_duration_seconds_bucket[10m])
+            )
+          ) > 10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: HR Agent provider p95 latency exceeds ten seconds
+          description: Provider {{ $labels.provider }} / {{ $labels.operation }} is delaying durable work.
+
+      - alert: HRAgentWorkerProviderLatencyHigh
+        expr: |
+          histogram_quantile(
+            0.95,
+            max by (provider, operation, le) (
+              rate(hr_worker_provider_duration_seconds_bucket[10m])
+            )
+          ) > 10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: HR Agent worker provider p95 latency exceeds ten seconds
+          description: Dedicated worker calls to {{ $labels.provider }} / {{ $labels.operation }} are delayed.

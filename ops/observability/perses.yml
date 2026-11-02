@@ -1,0 +1,34 @@
+security:
+  # The reference service is reachable only through an authenticated operator
+  # access proxy on the private backend network. It has no published host port.
+  readonly: true
+  enable_auth: false
+  encryption_key_file: /run/secrets/hr_agent_perses_encryption_key
+
+database:
+  file:
+    folder: /perses/data
+    extension: yaml
+
+provisioning:
+  interval: 5m
+  folders:
+    - /etc/perses/provisioning
+
+ephemeral_dashboard:
+  enable: false
+
+frontend:
+  information: |-
+    # HR Agent operator console
+    Provisioned read-only from the reviewed observability configuration.
+
+plugin:
+  # The distroless image ships read-only archives. Extraction goes to the
+  # persistent service-owned volume rather than the immutable root filesystem.
+  path: /perses/plugins
+  archive_paths:
+    - /etc/perses/plugins-archive
+  enabled:
+    - Prometheus
+    - TimeSeriesChart

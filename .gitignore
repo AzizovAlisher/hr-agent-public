@@ -1,0 +1,62 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+.turbo/
+.pnpm-store/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.uv/
+.python-version
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Storage (uploaded CVs etc.)
+storage/
+# The application storage implementation is source code, not runtime data.
+!apps/api/app/storage/
+!apps/api/app/storage/**
+apps/api/app/storage/**/__pycache__/
+apps/api/app/storage/**/*.py[cod]
+
+# v1 reference (read-only, not part of v2 git history)
+v1/
+hr.ai-main.zip
+
+# Local plan/notes that aren't tracked
+.claude/
+
+# Playwright/verification artifacts (screenshots, captured HTML)
+output/
+.playwright-cli/
+
+# Scratch CV files used for manual testing — these hold real applicant PII
+# (names, phone numbers, emails) and must never enter git history.
+cv.txt
+*.cv.txt

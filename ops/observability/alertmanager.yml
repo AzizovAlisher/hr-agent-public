@@ -1,0 +1,12 @@
+route:
+  receiver: pilot-operations-webhook
+  group_by: [alertname, severity]
+  group_wait: 5s
+  group_interval: 30s
+  repeat_interval: 4h
+
+receivers:
+  - name: pilot-operations-webhook
+    webhook_configs:
+      - url_file: /run/secrets/hr_agent_alert_webhook_url
+        send_resolved: true

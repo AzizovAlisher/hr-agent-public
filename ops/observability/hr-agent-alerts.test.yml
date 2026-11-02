@@ -1,0 +1,420 @@
+rule_files:
+  - hr-agent-alerts.yml
+
+evaluation_interval: 1m
+
+# Every alert has a pending assertion immediately before its `for` duration,
+# a firing assertion at the duration, and an inactive threshold/healthy case.
+# Rate and histogram expressions need two samples before they can become
+# pending, so their firing assertions account for that first minute.
+tests:
+  - name: availability gauges honor healthy boundaries and for durations
+    interval: 1m
+    input_series:
+      - series: 'up{job="hr-agent-api",instance="api-down"}'
+        values: 0x15
+      - series: 'up{job="hr-agent-api",instance="api-healthy"}'
+        values: 1x15
+      - series: 'hr_readiness_overall_ok{source="failed"}'
+        values: 0x15
+      - series: 'hr_readiness_overall_ok{source="healthy-boundary"}'
+        values: 1x15
+      - series: 'hr_observability_snapshot_success{source="failed"}'
+        values: 0x15
+      - series: 'hr_observability_snapshot_success{source="healthy-boundary"}'
+        values: 1x15
+      - series: 'hr_malware_signature_age_seconds{scanner="stale"}'
+        values: 172801x15
+      - series: 'hr_malware_signature_age_seconds{scanner="boundary"}'
+        values: 172800x15
+    alert_rule_test:
+      - eval_time: 1m
+        alertname: HRAgentMetricsTargetDown
+        exp_alerts: []
+      - eval_time: 2m
+        alertname: HRAgentMetricsTargetDown
+        exp_alerts:
+          - exp_labels:
+              instance: api-down
+              job: hr-agent-api
+              severity: critical
+            exp_annotations:
+              summary: HR Agent metrics target is unavailable
+              description: Prometheus has been unable to scrape an API replica for two minutes.
+      - eval_time: 4m
+        alertname: HRAgentNotReady
+        exp_alerts: []
+      - eval_time: 5m
+        alertname: HRAgentNotReady
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              source: failed
+            exp_annotations:
+              summary: HR Agent dependency readiness is failing
+              description: At least one database, migration, storage, rate-limit, worker, queue, or tenant-isolation dependency is failed.
+      - eval_time: 1m
+        alertname: HRAgentDependencySnapshotFailed
+        exp_alerts: []
+      - eval_time: 2m
+        alertname: HRAgentDependencySnapshotFailed
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              source: failed
+            exp_annotations:
+              summary: HR Agent could not refresh dependency telemetry
+              description: The metrics endpoint is available, but its dependency snapshot failed closed.
+      - eval_time: 4m
+        alertname: HRAgentMalwareSignaturesStale
+        exp_alerts: []
+      - eval_time: 5m
+        alertname: HRAgentMalwareSignaturesStale
+        exp_alerts:
+          - exp_labels:
+              scanner: stale
+              severity: critical
+            exp_annotations:
+              summary: HR Agent malware signatures are stale
+              description: The ClamAV signature database is older than the 48-hour pilot safety limit.
+
+  - name: missing readiness series honors the three minute duration
+    interval: 1m
+    alert_rule_test:
+      - eval_time: 2m
+        alertname: HRAgentReadinessMetricsMissing
+        exp_alerts: []
+      - eval_time: 3m
+        alertname: HRAgentReadinessMetricsMissing
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              summary: HR Agent readiness telemetry is missing
+              description: The target is scrapeable but has stopped publishing the authoritative readiness gauge.
+
+  - name: present readiness series keeps the absence alert inactive
+    interval: 1m
+    input_series:
+      - series: hr_readiness_overall_ok
+        values: 0x10
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HRAgentReadinessMetricsMissing
+        exp_alerts: []
+
+  - name: aggregate server error rate fires above two percent after ten minutes
+    interval: 1m
+    input_series:
+      - series: 'hr_http_requests_total{status_class="5xx"}'
+        values: 0+3x25
+      - series: 'hr_http_requests_total{status_class="2xx"}'
+        values: 0+97x25
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HRAgentHighServerErrorRate
+        exp_alerts: []
+      - eval_time: 11m
+        alertname: HRAgentHighServerErrorRate
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: HR Agent API 5xx rate exceeds 2%
+              description: The aggregate server-error ratio has exceeded the pilot error budget for ten minutes.
+
+  - name: aggregate server error rate stays inactive at two percent
+    interval: 1m
+    input_series:
+      - series: 'hr_http_requests_total{status_class="5xx"}'
+        values: 0+2x25
+      - series: 'hr_http_requests_total{status_class="2xx"}'
+        values: 0+98x25
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: HRAgentHighServerErrorRate
+        exp_alerts: []
+
+  - name: aggregate API p95 fires above 500 milliseconds after ten minutes
+    interval: 1m
+    input_series:
+      - series: 'hr_http_request_duration_seconds_bucket{le="0.5"}'
+        values: 0+90x25
+      - series: 'hr_http_request_duration_seconds_bucket{le="1"}'
+        values: 0+100x25
+      - series: 'hr_http_request_duration_seconds_bucket{le="+Inf"}'
+        values: 0+100x25
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HRAgentApiP95LatencyHigh
+        exp_alerts: []
+      - eval_time: 11m
+        alertname: HRAgentApiP95LatencyHigh
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: HR Agent API p95 latency exceeds 500 ms
+              description: Aggregate request latency is above the indexed-read pilot target.
+
+  - name: aggregate API p95 stays inactive at 500 milliseconds
+    interval: 1m
+    input_series:
+      - series: 'hr_http_request_duration_seconds_bucket{le="0.5"}'
+        values: 0+95x25
+      - series: 'hr_http_request_duration_seconds_bucket{le="1"}'
+        values: 0+100x25
+      - series: 'hr_http_request_duration_seconds_bucket{le="+Inf"}'
+        values: 0+100x25
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: HRAgentApiP95LatencyHigh
+        exp_alerts: []
+
+  - name: durable work alerts honor thresholds and for durations
+    interval: 1m
+    input_series:
+      - series: 'hr_queue_oldest_due_age_seconds{queue="aging"}'
+        values: 301x10
+      - series: 'hr_queue_oldest_due_age_seconds{queue="aging-boundary"}'
+        values: 300x10
+      - series: 'hr_queue_oldest_due_age_seconds{queue="critical"}'
+        values: 901x10
+      - series: 'hr_queue_oldest_due_age_seconds{queue="critical-boundary"}'
+        values: 900x10
+      - series: 'hr_queue_dead_letter_jobs{queue="dead-letter"}'
+        values: 1x10
+      - series: 'hr_queue_dead_letter_jobs{queue="empty-boundary"}'
+        values: 0x10
+      - series: 'hr_worker_missing_queues{region="missing"}'
+        values: 1x10
+      - series: 'hr_worker_missing_queues{region="covered-boundary"}'
+        values: 0x10
+      - series: 'hr_worker_fresh_replicas{region="absent"}'
+        values: 0x10
+      - series: 'hr_worker_fresh_replicas{region="one-boundary"}'
+        values: 1x10
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: HRAgentQueueBacklogAging
+        exp_alerts: []
+      - eval_time: 5m
+        alertname: HRAgentQueueBacklogAging
+        exp_alerts:
+          - exp_labels:
+              queue: aging
+              severity: warning
+            exp_annotations:
+              summary: HR Agent durable queue is delayed
+              description: Queue aging has due work older than five minutes.
+          - exp_labels:
+              queue: critical
+              severity: warning
+            exp_annotations:
+              summary: HR Agent durable queue is delayed
+              description: Queue critical has due work older than five minutes.
+          - exp_labels:
+              queue: critical-boundary
+              severity: warning
+            exp_annotations:
+              summary: HR Agent durable queue is delayed
+              description: Queue critical-boundary has due work older than five minutes.
+      - eval_time: 1m
+        alertname: HRAgentQueueBacklogCritical
+        exp_alerts: []
+      - eval_time: 2m
+        alertname: HRAgentQueueBacklogCritical
+        exp_alerts:
+          - exp_labels:
+              queue: critical
+              severity: critical
+            exp_annotations:
+              summary: HR Agent durable queue age is critical
+              description: Queue critical has due work older than fifteen minutes.
+      - eval_time: 4m
+        alertname: HRAgentDeadLetterWork
+        exp_alerts: []
+      - eval_time: 5m
+        alertname: HRAgentDeadLetterWork
+        exp_alerts:
+          - exp_labels:
+              queue: dead-letter
+              severity: warning
+            exp_annotations:
+              summary: HR Agent durable work reached dead letter
+              description: Queue dead-letter contains work requiring inspection or controlled replay.
+      - eval_time: 1m
+        alertname: HRAgentWorkerCoverageMissing
+        exp_alerts: []
+      - eval_time: 2m
+        alertname: HRAgentWorkerCoverageMissing
+        exp_alerts:
+          - exp_labels:
+              region: missing
+              severity: critical
+            exp_annotations:
+              summary: HR Agent required queue has no fresh worker
+              description: At least one enabled durable queue is not covered by a recent worker heartbeat.
+      - eval_time: 1m
+        alertname: HRAgentWorkersAbsent
+        exp_alerts: []
+      - eval_time: 2m
+        alertname: HRAgentWorkersAbsent
+        exp_alerts:
+          - exp_labels:
+              region: absent
+              severity: critical
+            exp_annotations:
+              summary: HR Agent has no fresh worker replica
+              description: No dedicated worker heartbeat is within the configured freshness window.
+
+  - name: API provider failures fire above five after five minutes
+    interval: 1m
+    input_series:
+      - series: 'hr_provider_operations_total{provider="mail",operation="send",outcome="failed"}'
+        values: 0+10x15
+      - series: 'hr_provider_operations_total{provider="calendar",operation="sync",outcome="failed"}'
+        values: 0+0.5x15
+      - series: 'hr_provider_operations_total{provider="ignored",operation="fetch",outcome="succeeded"}'
+        values: 0+100x15
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: HRAgentProviderFailures
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: HRAgentProviderFailures
+        exp_alerts:
+          - exp_labels:
+              operation: send
+              provider: mail
+              severity: warning
+            exp_annotations:
+              summary: HR Agent provider operations are failing
+              description: Provider mail / send has repeated failures or degraded results.
+
+  - name: API provider failures stay inactive at an increase of five
+    interval: 1m
+    input_series:
+      - series: 'hr_provider_operations_total{provider="calendar",operation="sync",outcome="failed"}'
+        values: 0+0.5x20
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: HRAgentProviderFailures
+        exp_alerts: []
+
+  - name: worker provider failures fire above five after five minutes
+    interval: 1m
+    input_series:
+      - series: 'hr_worker_provider_operations_total{instance="worker-a",provider="ats",operation="push",outcome="degraded"}'
+        values: 0+10x15
+      - series: 'hr_worker_provider_operations_total{instance="worker-b",provider="calendar",operation="sync",outcome="failed"}'
+        values: 0+0.5x15
+      - series: 'hr_worker_provider_operations_total{instance="worker-c",provider="ignored",operation="fetch",outcome="succeeded"}'
+        values: 0+100x15
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: HRAgentWorkerProviderFailures
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: HRAgentWorkerProviderFailures
+        exp_alerts:
+          - exp_labels:
+              operation: push
+              provider: ats
+              severity: warning
+            exp_annotations:
+              summary: HR Agent worker provider operations are failing
+              description: Dedicated workers report repeated failures for ats / push.
+
+  - name: worker provider failures stay inactive at an increase of five
+    interval: 1m
+    input_series:
+      - series: 'hr_worker_provider_operations_total{instance="worker-b",provider="calendar",operation="sync",outcome="failed"}'
+        values: 0+0.5x20
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: HRAgentWorkerProviderFailures
+        exp_alerts: []
+
+  - name: degraded provider connections honor zero and state boundaries
+    interval: 1m
+    input_series:
+      - series: 'hr_provider_connections{provider="ats",state="degraded"}'
+        values: 1x15
+      - series: 'hr_provider_connections{provider="calendar",state="expired"}'
+        values: 0x15
+      - series: 'hr_provider_connections{provider="mail",state="healthy"}'
+        values: 10x15
+    alert_rule_test:
+      - eval_time: 9m
+        alertname: HRAgentProviderConnectionsDegraded
+        exp_alerts: []
+      - eval_time: 10m
+        alertname: HRAgentProviderConnectionsDegraded
+        exp_alerts:
+          - exp_labels:
+              provider: ats
+              severity: warning
+            exp_annotations:
+              summary: HR Agent provider connection is degraded
+              description: Provider ats has one or more degraded or expired connections.
+
+  - name: API provider p95 fires above ten seconds after ten minutes
+    interval: 1m
+    input_series:
+      - series: 'hr_provider_duration_seconds_bucket{provider="mail",operation="send",le="10"}'
+        values: 0+90x25
+      - series: 'hr_provider_duration_seconds_bucket{provider="mail",operation="send",le="20"}'
+        values: 0+100x25
+      - series: 'hr_provider_duration_seconds_bucket{provider="mail",operation="send",le="+Inf"}'
+        values: 0+100x25
+      - series: 'hr_provider_duration_seconds_bucket{provider="calendar",operation="sync",le="10"}'
+        values: 0+95x25
+      - series: 'hr_provider_duration_seconds_bucket{provider="calendar",operation="sync",le="20"}'
+        values: 0+100x25
+      - series: 'hr_provider_duration_seconds_bucket{provider="calendar",operation="sync",le="+Inf"}'
+        values: 0+100x25
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HRAgentProviderLatencyHigh
+        exp_alerts: []
+      - eval_time: 11m
+        alertname: HRAgentProviderLatencyHigh
+        exp_alerts:
+          - exp_labels:
+              operation: send
+              provider: mail
+              severity: warning
+            exp_annotations:
+              summary: HR Agent provider p95 latency exceeds ten seconds
+              description: Provider mail / send is delaying durable work.
+
+  - name: worker provider p95 fires above ten seconds after ten minutes
+    interval: 1m
+    input_series:
+      - series: 'hr_worker_provider_duration_seconds_bucket{instance="worker-a",provider="ats",operation="push",le="10"}'
+        values: 0+90x25
+      - series: 'hr_worker_provider_duration_seconds_bucket{instance="worker-a",provider="ats",operation="push",le="20"}'
+        values: 0+100x25
+      - series: 'hr_worker_provider_duration_seconds_bucket{instance="worker-a",provider="ats",operation="push",le="+Inf"}'
+        values: 0+100x25
+      - series: 'hr_worker_provider_duration_seconds_bucket{instance="worker-b",provider="calendar",operation="sync",le="10"}'
+        values: 0+95x25
+      - series: 'hr_worker_provider_duration_seconds_bucket{instance="worker-b",provider="calendar",operation="sync",le="20"}'
+        values: 0+100x25
+      - series: 'hr_worker_provider_duration_seconds_bucket{instance="worker-b",provider="calendar",operation="sync",le="+Inf"}'
+        values: 0+100x25
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: HRAgentWorkerProviderLatencyHigh
+        exp_alerts: []
+      - eval_time: 11m
+        alertname: HRAgentWorkerProviderLatencyHigh
+        exp_alerts:
+          - exp_labels:
+              operation: push
+              provider: ats
+              severity: warning
+            exp_annotations:
+              summary: HR Agent worker provider p95 latency exceeds ten seconds
+              description: Dedicated worker calls to ats / push are delayed.

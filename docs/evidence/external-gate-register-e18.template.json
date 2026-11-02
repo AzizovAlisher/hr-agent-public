@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "candidate": "E18",
+  "updated_at": "2026-08-24T12:00:00Z",
+  "release_decision": "not_go",
+  "providers": [
+    {
+      "id": "google_workspace",
+      "status": "awaiting_credentials",
+      "certification": null
+    },
+    {
+      "id": "microsoft_365",
+      "status": "awaiting_credentials",
+      "certification": null
+    },
+    {
+      "id": "telegram",
+      "status": "awaiting_credentials",
+      "certification": null
+    },
+    {
+      "id": "hh_ru",
+      "status": "awaiting_credentials",
+      "certification": null
+    }
+  ],
+  "openrouter_incident": {
+    "status": "blocking_rotation",
+    "old_key_fingerprint_sha256": null,
+    "new_key_fingerprint_sha256": null,
+    "revoked_at": null,
+    "old_probe_http_status": null,
+    "new_probe_http_status": null,
+    "operator": null,
+    "evidence_reference": null
+  },
+  "approvals": [
+    {
+      "role": "product",
+      "status": "awaiting_review",
+      "reviewer": null,
+      "decided_at": null,
+      "evidence_reference": null
+    },
+    {
+      "role": "security",
+      "status": "awaiting_review",
+      "reviewer": null,
+      "decided_at": null,
+      "evidence_reference": null
+    },
+    {
+      "role": "operations",
+      "status": "awaiting_review",
+      "reviewer": null,
+      "decided_at": null,
+      "evidence_reference": null
+    },
+    {
+      "role": "legal",
+      "status": "awaiting_review",
+      "reviewer": null,
+      "decided_at": null,
+      "evidence_reference": null
+    }
+  ],
+  "hosted_evidence": {
+    "status": "pending_exact_revision",
+    "head_sha": null,
+    "run_ids": [],
+    "checks": {},
+    "artifact_digests_sha256": {}
+  }
+}

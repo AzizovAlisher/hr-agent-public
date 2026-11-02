@@ -1,0 +1,6 @@
+kind: Project
+metadata:
+  name: hr-agent
+spec:
+  display:
+    name: HR Agent

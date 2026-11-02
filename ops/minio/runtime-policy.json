@@ -1,0 +1,55 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetBucketLocation"],
+      "Resource": [
+        "arn:aws:s3:::hr-agent-private",
+        "arn:aws:s3:::hr-agent-public"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket", "s3:ListBucketVersions"],
+      "Resource": ["arn:aws:s3:::hr-agent-private"],
+      "Condition": {
+        "StringLike": {"s3:prefix": ["private/*", "quarantine/*"]}
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:DeleteObjectVersion"
+      ],
+      "Resource": [
+        "arn:aws:s3:::hr-agent-private/private/*",
+        "arn:aws:s3:::hr-agent-private/quarantine/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket", "s3:ListBucketVersions"],
+      "Resource": ["arn:aws:s3:::hr-agent-public"],
+      "Condition": {
+        "StringLike": {"s3:prefix": ["logos/*", "quarantine/*"]}
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:DeleteObjectVersion"
+      ],
+      "Resource": [
+        "arn:aws:s3:::hr-agent-public/logos/*",
+        "arn:aws:s3:::hr-agent-public/quarantine/*"
+      ]
+    }
+  ]
+}

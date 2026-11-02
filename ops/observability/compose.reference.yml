@@ -1,0 +1,170 @@
+name: hr-agent-observability-reference
+
+# This is a deployment reference, not a public-port development stack. Attach
+# the existing API deployment and an authenticated operator access proxy to the
+# named private networks. Notification/trace egress must be allow-listed by the
+# deployment firewall to the destinations stored in mounted secret files.
+services:
+  prometheus:
+    image: prom/prometheus:v3.12.0@sha256:69f5241418838263316593f7274a304b095c40bcf22e57272865da91bd60a8ac
+    user: "65534:65534"
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./hr-agent-alerts.yml:/etc/prometheus/rules/hr-agent-alerts.yml:ro
+    secrets:
+      - source: metrics_bearer_token
+        target: hr_agent_metrics_token
+        uid: "65534"
+        gid: "65534"
+        mode: 0400
+    expose:
+      - "9090"
+    networks:
+      - application_observability
+      - monitoring_backend
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 256
+    mem_limit: 1g
+
+  alertmanager:
+    image: prom/alertmanager:v0.32.1@sha256:51a825c2a40acc3e338fdd00d622e01ec090f72be2b3ea46be0839cd47a4d286
+    user: "65534:65534"
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    volumes:
+      - alertmanager_data:/alertmanager
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    secrets:
+      - source: alert_webhook_url
+        target: hr_agent_alert_webhook_url
+        uid: "65534"
+        gid: "65534"
+        mode: 0400
+    expose:
+      - "9093"
+    networks:
+      - monitoring_backend
+      - notification_egress
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 256m
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.159.0@sha256:1f2c54a30e713fac6b3ae77a1ec84010c2007e29ced8ec666214fc2f6739c1cc
+    user: "10001:10001"
+    restart: unless-stopped
+    command:
+      - --config=/etc/otelcol-contrib/config.yaml
+    volumes:
+      - ./otel-collector.yml:/etc/otelcol-contrib/config.yaml:ro
+    secrets:
+      - source: otel_trace_exporters
+        target: hr_agent_otel_trace_exporters
+        uid: "10001"
+        gid: "10001"
+        mode: 0400
+      - source: otel_receiver_certificate
+        target: hr_agent_otel_receiver_certificate
+        uid: "10001"
+        gid: "10001"
+        mode: 0400
+      - source: otel_receiver_private_key
+        target: hr_agent_otel_receiver_private_key
+        uid: "10001"
+        gid: "10001"
+        mode: 0400
+      - source: otel_receiver_bearer_tokens
+        target: hr_agent_otel_receiver_bearer_tokens
+        uid: "10001"
+        gid: "10001"
+        mode: 0400
+    expose:
+      - "4318"
+      - "8888"
+      - "13133"
+    networks:
+      - application_observability
+      - monitoring_backend
+      - trace_egress
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 256
+    mem_limit: 512m
+
+  perses:
+    image: persesdev/perses:v0.54.0@sha256:a0e34ddaf9d7599d96036611af205b948c1179646844202d869f3bcf3d5d9e9c
+    user: "65532:65532"
+    restart: unless-stopped
+    command:
+      - --config=/etc/perses/config.yaml
+      - --log.level=warning
+    volumes:
+      - perses_data:/perses
+      - ./perses.yml:/etc/perses/config.yaml:ro
+      - ./perses-provisioning:/etc/perses/provisioning:ro
+    secrets:
+      - source: perses_encryption_key
+        target: hr_agent_perses_encryption_key
+        uid: "65532"
+        gid: "65532"
+        mode: 0400
+    expose:
+      - "8080"
+    networks:
+      - monitoring_backend
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 256
+    mem_limit: 512m
+
+secrets:
+  metrics_bearer_token:
+    file: ${HR_AGENT_METRICS_TOKEN_FILE:?set an absolute path to a mode-0400 metrics token file}
+  alert_webhook_url:
+    file: ${HR_AGENT_ALERT_WEBHOOK_URL_FILE:?set an absolute path to a mode-0400 webhook URL file}
+  otel_trace_exporters:
+    file: ${HR_AGENT_OTEL_TRACE_EXPORTERS_FILE:?set an absolute path to the mode-0400 exporter mapping}
+  otel_receiver_certificate:
+    file: ${HR_AGENT_OTEL_RECEIVER_CERTIFICATE_FILE:?set an absolute path to the PEM certificate}
+  otel_receiver_private_key:
+    file: ${HR_AGENT_OTEL_RECEIVER_PRIVATE_KEY_FILE:?set an absolute path to the mode-0400 PEM private key}
+  otel_receiver_bearer_tokens:
+    file: ${HR_AGENT_OTEL_RECEIVER_BEARER_TOKENS_FILE:?set an absolute path to the mode-0400 OTLP bearer token file}
+  perses_encryption_key:
+    file: ${HR_AGENT_PERSES_ENCRYPTION_KEY_FILE:?set an absolute path to a mode-0400 exactly-32-byte key file}
+
+networks:
+  application_observability:
+    external: true
+    name: ${HR_AGENT_APPLICATION_OBSERVABILITY_NETWORK:?set the private API monitoring network}
+  monitoring_backend:
+    internal: true
+  notification_egress:
+  trace_egress:
+
+volumes:
+  prometheus_data:
+  alertmanager_data:
+  perses_data:

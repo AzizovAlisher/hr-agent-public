@@ -1,0 +1,311 @@
+{
+  "format": "hr-agent-private-pilot-release-evidence-v1",
+  "recorded_at": "2026-08-23T23:15:54Z",
+  "updated_on": "2026-08-24",
+  "release": "E15-candidate",
+  "decision": "NOT_GO",
+  "decision_reasons": [
+    "preserved preview upgrade and final count reconciliation remain pending",
+    "exact-revision CI, Linux WebKit, image scans, SBOM, and signing are pending",
+    "live provider certification, OpenRouter incident closure, and human acceptance require external evidence"
+  ],
+  "repository": {
+    "branch": "codex/pilot-completion",
+    "base_commit": "e7fbcce067ccbf9b94b32ed98a9eeb8fd4ffd1ca",
+    "worktree_committed": false,
+    "migration_head": "e18c4f6a0b32",
+    "revision_note": "This record describes an uncommitted candidate. Exact-revision CI, artifact signing, and acceptance evidence cannot attach until the candidate is committed without further source changes."
+  },
+  "candidate_gates": {
+    "api_final_full_rerun": {
+      "status": "pass",
+      "scope": "migration e18c4f6a0b32 after privacy write-gate and attachment inventory closure",
+      "environment": "root_e22 with healthy ClamAV 3320, MinIO, and Valkey; managed/private LLM routes disabled",
+      "tests_collected": 737,
+      "tests_passed": 727,
+      "deliberate_skips": 10,
+      "tests_failed": 0,
+      "duration_seconds": 840.12
+    },
+    "forced_rls": {
+      "status": "pass",
+      "tests_passed": 9,
+      "protected_tables": 112,
+      "not_forced_or_disabled": 0
+    },
+    "live_storage_and_limits": {
+      "status": "pass",
+      "tests_passed": 3,
+      "contracts": [
+        "MinIO put-promote-read-delete",
+        "versioned object erasure",
+        "distributed Valkey rate limiting"
+      ]
+    },
+    "openapi_generated_client": {
+      "status": "pass",
+      "operations": 357,
+      "catalog": {
+        "bearer": 314,
+        "capability_token": 22,
+        "public": 10,
+        "auth_flow": 6,
+        "webhook_secret": 3,
+        "api_key": 2
+      },
+      "contract_tests_passed": 28,
+      "handwritten_wire_dto_residual": 0,
+      "generated_backed_declarations": 307,
+      "ui_only_declarations": 172
+    },
+    "web_current_tree": {
+      "status": "pass_local",
+      "generated_contract_tests_passed": 28,
+      "handwritten_wire_dto_residual": 0,
+      "typecheck": "pass",
+      "next_version": "16.3.2",
+      "production_build": "pass",
+      "static_pages_built": "11/11",
+      "browser_tests_collected": 112,
+      "browser_tests_passed": 103,
+      "intentional_skips": 9,
+      "browser_tests_failed": 0,
+      "local_projects": 4,
+      "project_results": {
+        "chromium_desktop": "28 passed",
+        "chromium_mobile": "25 passed, 3 intentional skips",
+        "firefox_desktop": "25 passed, 3 intentional skips",
+        "tablet_dark_reduced_motion": "25 passed, 3 intentional skips"
+      },
+      "focused_recovery_tests_passed": 12,
+      "adjacent_recovery_tests_passed": 8,
+      "linux_webkit": "pending exact-revision CI"
+    },
+    "readiness_boundary": {
+      "status": "pass_targeted",
+      "public_contract": "GET /health/ready returns only status and checked_at with no-store",
+      "operator_contract": "GET /enterprise/operations/readiness requires enterprise.manage and returns the shared detailed snapshot"
+    },
+    "signed_inbound_webhooks": {
+      "status": "pass_targeted",
+      "migration": "b74e1d9c0a32",
+      "surfaces": [
+        "communication.message.received",
+        "source.candidate.created"
+      ],
+      "contracts": [
+        "256 KiB raw-body bound before resource lookup",
+        "HMAC-SHA256 over timestamp and exact body",
+        "timestamp and versioned-envelope validation",
+        "same-event exact replay is idempotent",
+        "same-event different-payload conflict is rejected",
+        "cross-tenant and invalid-secret responses are non-enumerating"
+      ]
+    },
+    "malware_scanner": {
+      "status": "pass",
+      "image": "clamav/clamav:1.4.6@sha256:c3bfbf2a2c9abc1fc179e63832a9e8bfac901ede83853e3fa10acf6f1fb5c803",
+      "variant": "official Alpine LTS",
+      "maximum_signature_age_hours": 48,
+      "live_contract": [
+        "version and signature freshness",
+        "clean scan",
+        "EICAR detection"
+      ]
+    },
+    "real_stack_browser": {
+      "status": "pass_local_partial_matrix",
+      "tests_passed": 2,
+      "tests_failed": 0,
+      "projects": [
+        "chromium-real-stack",
+        "firefox-real-stack"
+      ],
+      "stack": [
+        "Next.js same-origin BFF",
+        "FastAPI",
+        "PostgreSQL with forced RLS",
+        "Valkey",
+        "MinIO",
+        "ClamAV",
+        "separate worker"
+      ],
+      "webkit_linux": "configured for pinned Playwright 1.62.1 CI; not executed locally on this candidate",
+      "mocked_suite_discovery": "112 project-expanded cases collected; real-stack tests are explicitly excluded from the mocked configuration"
+    },
+    "privacy_erasure_write_gate": {
+      "status": "pass_independent",
+      "migration": "e18c4f6a0b32",
+      "migration_guard_tests_passed": 13,
+      "problem_contract_tests_passed": 5,
+      "tenant_tables_covered": 112,
+      "contracts": [
+        "exclusive tenant advisory lock spans inventory through erasure commit",
+        "same-tenant row writes fail before mutation with SQLSTATE 55P03",
+        "HTTP maps only the exact gate conflict to sanitized 409 privacy_erasure_in_progress with Retry-After",
+        "adjacent-tenant, reentrant, and post-release writes succeed"
+      ]
+    },
+    "privacy_derived_graph": {
+      "status": "pass_independent",
+      "adjacent_tests_passed": 15,
+      "contracts": [
+        "canonical email, phone, UUID, conservative opaque canary, and exact full-document roots are deleted",
+        "common names and roles, neighboring identifiers, third-party referee data, unrelated same-tenant data, and identical other-tenant canaries survive",
+        "saved views, free chats, missions, workflows, messages, provider payloads, pending objects, and offer snapshots are covered"
+      ]
+    },
+    "document_attachment_inventory": {
+      "status": "pass_independent",
+      "owner_combined_focused_and_adjacent_passed": 87,
+      "owner_duration_seconds": 95.69,
+      "owner_environment": "migrated root_e20_schema_test",
+      "independent_focused_passed": 59,
+      "independent_extra_legacy_atomic_passed": 7,
+      "independent_direct_size_hash_passed": 5,
+      "docx_field_control_owner_fix_passed": 30,
+      "docx_field_control_independent_passed": 30,
+      "docx_extra_field_control_variants_passed": 6,
+      "owner_lexical_strict_zip_xml_passed": 79,
+      "independent_final_matrix_passed": 133,
+      "independent_final_matrix_failed": 0,
+      "independent_final_duration_seconds": 315.42,
+      "independent_additional_direct_probes_passed": 33,
+      "independent_environment": "root_e20_schema_test at e18c4f6a0b32",
+      "closed_subcases": {
+        "independent_formula_and_extra_sheet_selection_passed": 10,
+        "adjacent_parser_storage_privacy_passed": 32
+      },
+      "original_reproductions": [
+        "XLSX: a single-sheet formula-free workbook containing a canonical identifier only in a cell comment, mailto hyperlink target, or core document property is accepted and missed by retention.",
+        "DOCX: core properties, headers/footers, comments, mailto relationships, custom XML, and VML textbox content are accepted and missed by retention.",
+        "PDF: Info/XMP metadata, text annotations, and AcroForm values are accepted and missed by retention.",
+        "In each end-to-end probe erasure deletes the candidate while the marker-bearing object survives ready."
+      ],
+      "implemented_contract": "One bounded upload/retention validator inventories allowed XLSX/DOCX/PDF text and metadata, rejects non-inventoried embedded/interactive/package/xref surfaces with sanitized 422 and zero orphan residue, revalidates legacy content atomically with fail-closed 409, and rechecks size and SHA after parsing.",
+      "closed_follow_up_findings": [
+        "DOCX field, content-control, and mail-merge constructs reject with sanitized 422 and zero orphan; safe Russian DOCX remains accepted.",
+        "DOCX/XLSX XML comments, processing instructions, and namespace markers are inventoried for erasure under canonical strict ZIP layout.",
+        "Safe Russian embedded-font PDF is accepted and inventoried through bounded font/CMap/CID/TTF validation.",
+        "Interactive, unreachable, trailing, embedded, and malformed PDF structures reject or make legacy retention fail closed without partial erasure.",
+        "The transient XLSX fail-closed error-precedence mismatch was fixed and independently retested 26/26 before the 133/133 final matrix."
+      ],
+      "fonttools_dependency": "4.62.1 direct dependency, lock, and runtime confirmed",
+      "material_findings_remaining": 0
+    },
+    "performance_10k": {
+      "status": "pass_local",
+      "indexed_read_p95_ms": 277.396,
+      "indexed_read_target_ms": 500,
+      "local_mutation_p95_ms": 40.141,
+      "local_mutation_target_ms": 1000,
+      "evidence": "docs/evidence/candidate-10k-performance-e18-2026-08-24.json"
+    },
+    "recovery": {
+      "status": "pass_local",
+      "default_harness_passed": 36,
+      "default_harness_opt_in_skips": 3,
+      "disposable_tenant_drill_passed": 1,
+      "disposable_tenant_drill_failed": 0,
+      "contracts": [
+        "SELECT-only non-bypass source role",
+        "exported repeatable-read snapshot",
+        "row-by-row single-tenant dump proof",
+        "tenant-bound legacy object namespaces",
+        "restore advisory lock and ownership sentinel",
+        "atomic HMAC-authenticated evidence",
+        "ownership-safe rollback"
+      ]
+    },
+    "observability": {
+      "status": "pass_local",
+      "prometheus_alert_rules": 17,
+      "rule_test_groups": 15,
+      "rule_test_assertions": 39,
+      "rule_tests": "pass for all 17 alert names",
+      "perses_dashboard_panels": 6,
+      "authenticated_otlp_tls": "pass",
+      "live_delivery_scrapes": 156,
+      "live_prometheus_alertmanager_webhook": [
+        "firing",
+        "resolved"
+      ]
+    },
+    "supply_chain_local": {
+      "status": "pass_local_partial_release_gate",
+      "python_dependencies_audited": 101,
+      "python_vulnerabilities": 0,
+      "api_license_dependencies": 97,
+      "api_license_policy_findings": 0,
+      "bandit_high": 0,
+      "bandit_medium_reviewed": 10,
+      "bandit_low": 25,
+      "bandit_scope_loc": 88459,
+      "web_audit_findings": 0,
+      "web_production_license_dependencies": 61,
+      "web_production_license_findings": 0,
+      "trivy_secret_source_files": 768,
+      "trivy_secret_high_or_critical": 0,
+      "python_compile_files": 383,
+      "python_compile_failures": 0,
+      "frozen_lockfiles": "current",
+      "docker_base_stages_digest_pinned": "5/5",
+      "docker_runtime_uid_gid": "10001:10001",
+      "github_actions_pinned": "22/22",
+      "diff_check": "pass",
+      "reproducibility_caveat": "apk upgrade remains floating within the digest-pinned Alpine base",
+      "pending": "exact-revision image builds/scans, SBOMs, and keyless signing in CI"
+    },
+    "preserved_data": {
+      "status": "reconciled_at_preview_head",
+      "original_database": "recruitment_v2",
+      "original_database_mutated": false,
+      "preview_database": "recruitment_v2_preview",
+      "preview_migration_head": "a63d9e4b7c12",
+      "repository_migration_head": "e18c4f6a0b32",
+      "organizations": 1,
+      "candidates_total": 84,
+      "candidates_active": 82,
+      "candidates_soft_deleted": 2,
+      "positions": 105,
+      "legacy_scores": 1158,
+      "applications": 1158,
+      "application_stage_events": 1158,
+      "application_evaluations": 2316,
+      "interviews": 17,
+      "candidate_notes": 1,
+      "candidate_activities": 1280,
+      "archived_private_objects": 144,
+      "preview_upgrade_and_reconciliation_at_e18": "pending"
+    }
+  },
+  "internal_pending_gates": [
+    "apply e18c4f6a0b32 to the preserved preview and reconcile every preserved count",
+    "run pinned Linux WebKit against the exact committed revision",
+    "attach exact-revision CI, SBOM, vulnerability, and artifact-signing evidence"
+  ],
+  "external_blockers": {
+    "live_provider_certification": {
+      "status": "awaiting_credentials",
+      "providers": [
+        "Google Workspace",
+        "Microsoft 365",
+        "Telegram",
+        "hh.ru"
+      ]
+    },
+    "openrouter_credential_incident": {
+      "status": "blocking",
+      "required_proof": "revoke and rotate the exposed credential and prove the old credential is rejected without recording either value"
+    },
+    "human_acceptance": {
+      "status": "awaiting_review",
+      "reviewers": [
+        "product",
+        "security",
+        "operations",
+        "legal"
+      ]
+    }
+  }
+}

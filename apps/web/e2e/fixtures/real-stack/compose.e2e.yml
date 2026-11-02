@@ -1,0 +1,68 @@
+services:
+  postgres:
+    ports: !reset []
+
+  valkey:
+    ports: !reset []
+
+  minio:
+    ports: !reset []
+
+  api:
+    ports: !override
+      - "127.0.0.1:${REAL_STACK_API_PORT:-8300}:8000"
+    environment:
+      WEB_ORIGIN: "https://localhost:${REAL_STACK_HTTPS_PORT:-3643}"
+      INTEGRATION_OAUTH_REDIRECT_ORIGINS: "https://localhost:${REAL_STACK_HTTPS_PORT:-3643}"
+      S3_PUBLIC_BASE_URL: http://minio:9000/hr-agent-public
+      COMMUNICATIONS_WORKER_ENABLED: "false"
+      INTEGRATION_WORKER_ENABLED: "false"
+      SCHEDULING_WORKER_ENABLED: "false"
+      WORKFLOW_WORKER_ENABLED: "false"
+      AI_WORKER_ENABLED: "false"
+      CANDIDATE_PROCESSING_WORKER_ENABLED: "true"
+      CANDIDATE_PROCESSING_WORKER_POLL_SECONDS: "0.25"
+    # Compose must be able to finish before the fixture asks clamd to reload
+    # the freshly downloaded signature set. The test subsequently requires
+    # the full /health/ready contract before seeding or opening a browser.
+    healthcheck: !override
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live', timeout=3)
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  worker:
+    environment:
+      WEB_ORIGIN: "https://localhost:${REAL_STACK_HTTPS_PORT:-3643}"
+      INTEGRATION_OAUTH_REDIRECT_ORIGINS: "https://localhost:${REAL_STACK_HTTPS_PORT:-3643}"
+      S3_PUBLIC_BASE_URL: http://minio:9000/hr-agent-public
+      COMMUNICATIONS_WORKER_ENABLED: "false"
+      INTEGRATION_WORKER_ENABLED: "false"
+      SCHEDULING_WORKER_ENABLED: "false"
+      WORKFLOW_WORKER_ENABLED: "false"
+      AI_WORKER_ENABLED: "false"
+      CANDIDATE_PROCESSING_WORKER_ENABLED: "true"
+      CANDIDATE_PROCESSING_WORKER_POLL_SECONDS: "0.25"
+    healthcheck: !override
+      test:
+        - CMD
+        - python
+        - -c
+        - import pathlib; assert b'app.scripts.run_workers' in pathlib.Path('/proc/1/cmdline').read_bytes()
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  web:
+    ports: !override
+      - "127.0.0.1:${REAL_STACK_WEB_PORT:-3300}:3000"
+    environment:
+      NEXTAUTH_URL: "https://localhost:${REAL_STACK_HTTPS_PORT:-3643}"
+      API_BASE_URL: http://api:8000
+      NEXT_PUBLIC_API_BASE_URL: "http://127.0.0.1:${REAL_STACK_API_PORT:-8300}"

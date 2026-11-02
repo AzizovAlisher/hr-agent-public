@@ -1,0 +1,158 @@
+{
+  "format": "hr-agent-private-pilot-release-evidence-v1",
+  "recorded_at": "2026-08-23T18:04:19Z",
+  "release": "E14",
+  "migration_head": "fe48b7c1d902",
+  "baseline_commit": "425655def90c3d472f2985f1c268afcbdd37556d",
+  "implementation_commit": "1f1f516212e33fa1880043c147436f91db192781",
+  "revision_note": "The following evidence-only commit records this immutable implementation revision; GitHub Actions verifies the final branch HEAD.",
+  "known_material_defects": 0,
+  "software_gates": {
+    "api": {
+      "status": "pass",
+      "tests_passed": 448,
+      "tests_skipped": 11,
+      "warning_followup": "The sole local short-HMAC configuration warning was rerun with the production-length CI secret and -W error: 1 passed."
+    },
+    "forced_rls": {
+      "status": "pass",
+      "tests_passed": 9,
+      "protected_tables": 113,
+      "not_forced_or_disabled": 0
+    },
+    "migrations": {
+      "status": "pass",
+      "fresh_base_to_e14": true,
+      "alembic_check": true,
+      "e14_to_e13_to_e14": true,
+      "independent_worker_broker_retest": true
+    },
+    "web": {
+      "typecheck": "pass",
+      "production_build": "pass",
+      "generated_contracts": {
+        "status": "pass",
+        "checks": 27,
+        "handwritten_wire_dto_residual": 0,
+        "generated_backed_types": 298,
+        "ui_only_types": 171
+      },
+      "stable_browser_matrix": {
+        "passed": 38,
+        "expected_skips": 6,
+        "projects": [
+          "Chromium desktop",
+          "Chromium 320x568 mobile",
+          "Firefox desktop",
+          "Chromium dark/reduced-motion tablet"
+        ]
+      },
+      "linux_webkit": {
+        "passed": 9,
+        "expected_skips": 2
+      },
+      "axe_serious_or_critical": 0
+    },
+    "golden_journey": {
+      "status": "pass",
+      "languages": [
+        "ru",
+        "en"
+      ],
+      "flow": "requisition -> approval -> position -> public apply -> dedupe -> application -> assessment -> interview -> scorecard -> offer -> acceptance -> handoff/hire -> analytics"
+    },
+    "reliability": {
+      "status": "pass",
+      "topology": "two API replicas and two worker replicas",
+      "sigkill_reclaim_replay": {
+        "input_rows": 3000,
+        "jobs": 1,
+        "attempts": 2,
+        "chunks": 30,
+        "distinct_candidate_effects": 3000,
+        "distinct_application_effects": 3000,
+        "usage_effects": 1,
+        "duplicate_effects_after_replay": 0
+      }
+    },
+    "performance": {
+      "status": "pass",
+      "dataset_candidates": 10000,
+      "indexed_read_p95_ms": 222.124,
+      "indexed_read_target_ms": 500,
+      "local_mutation_p95_ms": 71.218,
+      "local_mutation_target_ms": 1000,
+      "evidence": "docs/evidence/candidate-10k-performance-e14-2026-08-23.json"
+    },
+    "recovery": {
+      "status": "pass",
+      "archive_sha256": "2edb0ffff97bae1dfdef4f4e6971738e698056e8818513a2e1ed481bd8f94b92",
+      "objects": 144,
+      "object_bytes": 36474385,
+      "checksums_match": true,
+      "rollback_verified": true,
+      "rpo_seconds": 130.482,
+      "rpo_target_seconds": 86400,
+      "rto_seconds": 8.491,
+      "rto_target_seconds": 14400,
+      "evidence": "docs/evidence/preserved-data-e14-full-object-recovery-drill-2026-08-23.json"
+    },
+    "supply_chain": {
+      "local_status": "pass",
+      "source_fingerprint_sha256": "9791dd783f2e3c01ce7a2f639228fe6c50a72b26e03b5e8719691272deadd6e6",
+      "repository_high_critical_vulnerabilities": 0,
+      "repository_high_critical_secrets": 0,
+      "repository_high_critical_misconfigurations": 0,
+      "dependency_advisories": 0,
+      "bandit_high": 0,
+      "prohibited_licenses": 0,
+      "api_image": {
+        "id": "sha256:5d4db5de09d34a074bb0d737a4d22ba2dab2a59e8d91278229f0ffa334448254",
+        "high_critical_vulnerabilities": 0,
+        "uid_gid": "10001:10001",
+        "spdx_packages": 129
+      },
+      "web_image": {
+        "id": "sha256:e1d8b06c69165198aab03d60b4e98e0f811252aabb79c2d6cb90d2ccfdc59d11",
+        "high_critical_vulnerabilities": 0,
+        "uid_gid": "10001:10001",
+        "spdx_packages": 92
+      },
+      "evidence_directory": "/Users/user/Documents/HR-app/backups/supply-chain/final-e14-20260823T1759Z"
+    },
+    "preserved_data": {
+      "status": "pass",
+      "active_candidates": 82,
+      "soft_deleted_candidates": 2,
+      "positions": 105,
+      "legacy_scores": 1158,
+      "applications": 1158,
+      "broken_links": 0,
+      "private_objects": 144,
+      "ui_preview": "http://127.0.0.1:3100/candidates",
+      "evidence": "docs/evidence/data-preservation-2026-08-23.json"
+    }
+  },
+  "independent_retests": {
+    "bounded_3000_member_duplicate_component": "pass",
+    "e14_worker_global_maintenance_grant": "pass",
+    "empty_target_and_partial_failure_recovery": "pass",
+    "new_material_findings": 0
+  },
+  "ci": {
+    "status": "pending",
+    "reason": "The branch must be committed and pushed before the exact-revision GitHub Actions/OIDC signing gate can run."
+  },
+  "external_approvals": {
+    "live_provider_certification": {
+      "status": "awaiting_credentials",
+      "providers": [
+        "Google Workspace",
+        "Microsoft 365",
+        "Telegram",
+        "hh.ru"
+      ]
+    },
+    "customer_product_acceptance": "awaiting_preview_review"
+  }
+}

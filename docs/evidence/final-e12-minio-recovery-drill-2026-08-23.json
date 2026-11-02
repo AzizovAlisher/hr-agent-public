@@ -1,0 +1,34 @@
+{
+  "archive": {
+    "bytes": 42035845,
+    "mode": "0600",
+    "sha256": "c8e206cda19512cae0dba0aab7bbbcabb4ad5dcae212d220023af9a4480ef2c9"
+  },
+  "backup_id": "hr-agent-20260822T221605Z-8e2ee00c",
+  "database": {
+    "candidate_rls_enabled": true,
+    "candidate_rls_forced": true,
+    "migration_head": "fc26d0a1b435",
+    "organization_count": 1,
+    "required_roles_match": true,
+    "runtime_public_schema_usage": true,
+    "security_schema_owner": "hr_agent_broker",
+    "worker_public_schema_usage": true
+  },
+  "format": "hr-agent-recovery-evidence-v1",
+  "objects": {
+    "bytes": 36472489,
+    "checksums_match": true,
+    "count": 128
+  },
+  "release_revision": "pending-final-head",
+  "rollback_verified": true,
+  "rpo_seconds": 58.222,
+  "rpo_target_seconds": 86400,
+  "rto_seconds": 4.325,
+  "rto_target_seconds": 14400,
+  "status": "pass",
+  "target_database": "hr_final_e12_restore_20260823",
+  "target_object_kind": "s3",
+  "verified_at": "2026-08-22T22:17:09.633502Z"
+}

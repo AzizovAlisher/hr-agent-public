@@ -1,0 +1,136 @@
+{
+  "acceptance_id": "DATA-001",
+  "recorded_at": "2026-08-23T18:04:19Z",
+  "status": "passed",
+  "repository": {
+    "baseline_commit": "425655def90c3d472f2985f1c268afcbdd37556d",
+    "implementation_revision": "1f1f516212e33fa1880043c147436f91db192781",
+    "revision_note": "The following evidence-only commit records this immutable implementation revision; GitHub Actions verifies the final branch HEAD.",
+    "verified_source_fingerprint_sha256": "9791dd783f2e3c01ce7a2f639228fe6c50a72b26e03b5e8719691272deadd6e6",
+    "fingerprint_scope": "699 non-ignored source files before this evidence-only update"
+  },
+  "protected_original": {
+    "database": "recruitment_v2",
+    "mutated": false,
+    "backup_path": "/Users/user/Documents/HR-app/backups/recruitment_v2-pre-completion-20260822T201252Z.dump",
+    "format": "PostgreSQL custom-format dump",
+    "bytes": 4358281,
+    "mode": "0600",
+    "parent_directory_mode": "0700",
+    "sha256": "8e926ea3c9e9afbf773e24110cb60ce556b36d7c673e7273aa9e9f36a2fe651d",
+    "source_migration_head": "d9f1a3c5e7b2"
+  },
+  "final_encrypted_e14_archive": {
+    "backup_id": "hr-agent-20260823T174821Z-e152fb6c",
+    "archive_path": "/Users/user/Documents/HR-app/backups/encrypted/final-e14/hr-agent-20260823T174821Z-e152fb6c.hrb",
+    "receipt_path": "/Users/user/Documents/HR-app/backups/encrypted/final-e14/hr-agent-20260823T174821Z-e152fb6c.receipt.json",
+    "archive_bytes": 42302085,
+    "archive_mode": "0600",
+    "archive_sha256": "2edb0ffff97bae1dfdef4f4e6971738e698056e8818513a2e1ed481bd8f94b92",
+    "encryption": "RSA-OAEP-SHA256 plus AES-256-GCM",
+    "database_bytes": 5078062,
+    "private_object_count": 144,
+    "private_object_bytes": 36474385,
+    "retention_days": 35,
+    "expires_on": "2026-09-27",
+    "authenticated_verify_result": "pass",
+    "key_directory_mode": "0700",
+    "key_file_modes": "0600"
+  },
+  "migration_target": {
+    "database": "recruitment_v2_preview",
+    "migration_head": "fe48b7c1d902",
+    "alembic_check": "No new upgrade operations detected",
+    "fresh_base_to_head": "pass",
+    "one_step_downgrade_reupgrade": "pass",
+    "protected_table_count": 113,
+    "rls_disabled_or_not_forced": 0,
+    "api_role_superuser": false,
+    "api_role_bypass_rls": false
+  },
+  "canonical_record_reconciliation": {
+    "before": {
+      "organizations": 1,
+      "users": 1,
+      "candidates_total": 84,
+      "candidates_active": 82,
+      "candidates_soft_deleted": 2,
+      "positions": 105,
+      "legacy_scores": 1158,
+      "interviews": 17,
+      "candidate_notes": 1,
+      "candidate_activities": 1280
+    },
+    "after": {
+      "organizations": 1,
+      "users": 2,
+      "candidates_total": 84,
+      "candidates_active": 82,
+      "candidates_soft_deleted": 2,
+      "positions": 105,
+      "legacy_scores": 1158,
+      "applications": 1158,
+      "applications_linked_to_legacy_scores": 1158,
+      "application_stage_events": 1158,
+      "application_evaluations": 2316,
+      "interviews": 17,
+      "interview_kit_versions": 17,
+      "candidate_notes": 1,
+      "candidate_activities": 1280,
+      "public_tables": 116
+    },
+    "broken_application_to_score_links": 0,
+    "legacy_scores_without_application": 0,
+    "expected_only_additions": {
+      "preview_only_users": 1,
+      "new_application_evaluations": 2316,
+      "new_interview_kit_versions": 17,
+      "new_schema_tables": 12
+    }
+  },
+  "recovery": {
+    "full_object_evidence": "docs/evidence/preserved-data-e14-full-object-recovery-drill-2026-08-23.json",
+    "status": "pass",
+    "objects": 144,
+    "object_bytes": 36474385,
+    "checksums_match": true,
+    "rollback_verified": true,
+    "rpo_seconds": 130.482,
+    "rpo_target_seconds": 86400,
+    "rto_seconds": 8.491,
+    "rto_target_seconds": 14400
+  },
+  "api_reconciliation": {
+    "authenticated_identity": "preview@hrpilot.app",
+    "candidates": {
+      "active_total": 82,
+      "first_page_count": 82,
+      "next_cursor": false
+    },
+    "positions": {
+      "total": 105,
+      "first_page_count": 100,
+      "next_cursor": true
+    },
+    "applications": {
+      "total": 1158,
+      "first_page_count": 100,
+      "next_cursor": true
+    }
+  },
+  "ui_reconciliation": {
+    "url": "http://127.0.0.1:3100/candidates",
+    "observed_at": "2026-08-23T18:04:19Z",
+    "authenticated_identity": "preview@hrpilot.app",
+    "visible_candidate_count": 82,
+    "visible_position_count": 105,
+    "visible_duplicate_group_count": 7,
+    "list_behavior": "All 82 active historical candidates render; the two soft-deleted records remain in authorized trash/recovery history rather than the active list.",
+    "sample_assertions": [
+      "Candidate rows render preserved score, source, position, stage, duplicate, favorite, and viewed-state data.",
+      "The position filter renders the historical English and Russian position titles.",
+      "The authenticated in-app Browser preview is left open on the preserved candidates page."
+    ]
+  },
+  "result": "All canonical pre-completion hiring records remain represented. No candidate, position, score, application, stage event, interview, note, activity, or private object was lost. History-only records remain intentionally excluded from active-list counts."
+}

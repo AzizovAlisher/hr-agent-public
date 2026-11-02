@@ -1,0 +1,29 @@
+{
+  "Rules": [
+    {
+      "Expiration": {"Days": 1},
+      "ID": "quarantine-current-expiry",
+      "Filter": {"Prefix": "quarantine/"},
+      "NoncurrentVersionExpiration": {"NoncurrentDays": 1},
+      "Status": "Enabled"
+    },
+    {
+      "Expiration": {"ExpiredObjectDeleteMarker": true},
+      "ID": "quarantine-marker-expiry",
+      "Filter": {"Prefix": "quarantine/"},
+      "Status": "Enabled"
+    },
+    {
+      "ID": "private-noncurrent-version-expiry",
+      "Filter": {"Prefix": "private/"},
+      "NoncurrentVersionExpiration": {"NoncurrentDays": 35},
+      "Status": "Enabled"
+    },
+    {
+      "Expiration": {"ExpiredObjectDeleteMarker": true},
+      "ID": "private-marker-expiry",
+      "Filter": {"Prefix": "private/"},
+      "Status": "Enabled"
+    }
+  ]
+}

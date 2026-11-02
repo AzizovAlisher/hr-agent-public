@@ -1,0 +1,33 @@
+{
+  "dataset": {
+    "candidate_count": 10000,
+    "matching_candidate_count": 100
+  },
+  "environment": {
+    "platform": "macOS-26.0.1-arm64-arm-64bit",
+    "postgresql": "16.13",
+    "python": "3.12.13"
+  },
+  "format": "hr-agent-performance-evidence-v1",
+  "indexed_read": {
+    "p95_ms": 178.694,
+    "pass": true,
+    "query_plan_nodes": [
+      "Bitmap Heap Scan",
+      "Bitmap Index Scan",
+      "Limit",
+      "Sort"
+    ],
+    "route": "GET /candidate-search?q=benchmarkneedle&limit=50",
+    "runs": 30,
+    "target_ms": 500.0
+  },
+  "local_mutation": {
+    "p95_ms": 44.468,
+    "pass": true,
+    "route": "PATCH /candidates/{candidate_id}",
+    "runs": 30,
+    "target_ms": 1000.0
+  },
+  "recorded_at": "2026-08-24T03:01:55.599035Z"
+}

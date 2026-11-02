@@ -1,0 +1,483 @@
+name: pilot-release-gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pilot-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    # The full database suite is intentionally exhaustive. The current
+    # 700-plus-case matrix takes about 14 minutes on the reference developer
+    # host and roughly 48 minutes on a hosted runner before the remaining
+    # contract/security gates. Keep the release gate bounded without
+    # canceling an otherwise healthy full-suite run.
+    timeout-minutes: 75
+    services:
+      postgres:
+        image: postgres:16-alpine@sha256:4e6e670bb069649261c9c18031f0aded7bb249a5b6664ddec29c013a89310d50
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: recruitment_v2_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d recruitment_v2_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      valkey:
+        image: valkey/valkey:9.1.0-alpine@sha256:c9b77919daeba2c02ad954d0c844cc4e7142069d177b89c5fd771f405daf9e02
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "valkey-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/recruitment_v2_test
+      TEST_DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/recruitment_v2_test
+      JWT_SECRET: ci-only-secret-that-is-long-and-never-used-outside-ci
+      TEST_VALKEY_URL: redis://localhost:6379/15
+      MINIO_TEST_ENDPOINT: http://127.0.0.1:9000
+      MINIO_TEST_BUCKET: hr-agent-contract
+      MINIO_TEST_ACCESS_KEY: ci-minio-access
+      MINIO_TEST_SECRET_KEY: ci-only-minio-secret-value-over-thirty-two-bytes
+      CLAMAV_TEST_HOST: 127.0.0.1
+      CLAMAV_TEST_PORT: "3310"
+      COMMUNICATIONS_WORKER_ENABLED: "false"
+      SCHEDULING_WORKER_ENABLED: "false"
+      WORKFLOW_WORKER_ENABLED: "false"
+      AI_WORKER_ENABLED: "false"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Defect traceability verifies historical implementation commits.
+          # The default single-commit checkout cannot prove their presence.
+          fetch-depth: 0
+      - name: Validate pending release-evidence schemas
+        run: |
+          python3 ops/release/test_validate_release_document_credentials.py
+          python3 ops/release/validate_release_document_credentials.py \
+            docs/PILOT_COMPLETION_REPORT_2026-08-24.md docs/evidence
+          python3 ops/release/test_validate_external_gate_register.py
+          python3 ops/release/validate_external_gate_register.py docs/evidence/external-gate-register-e18.template.json
+          python3 ops/release/test_validate_defect_closure_index.py
+          python3 ops/release/validate_defect_closure_index.py docs/evidence/defect-closure-index-e18.json
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.11.8"
+          enable-cache: true
+      - name: Install locked API dependencies
+        working-directory: apps/api
+        run: uv sync --locked --all-groups
+      - name: Start pinned MinIO compatibility target
+        run: |
+          docker network create hr-agent-ci-storage
+          docker run --detach --rm \
+            --name hr-agent-ci-minio \
+            --network hr-agent-ci-storage \
+            --publish 127.0.0.1:9000:9000 \
+            --env MINIO_ROOT_USER="$MINIO_TEST_ACCESS_KEY" \
+            --env MINIO_ROOT_PASSWORD="$MINIO_TEST_SECRET_KEY" \
+            quay.io/minio/minio:RELEASE.2025-07-23T15-54-02Z@sha256:d249d1fb6966de4d8ad26c04754b545205ff15a62e4fd19ebd0f26fa5baacbc0 \
+            server /data
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error \
+              http://127.0.0.1:9000/minio/health/live >/dev/null; then
+              break
+            fi
+            test "$attempt" -lt 30
+            sleep 1
+          done
+          docker run --rm \
+            --network hr-agent-ci-storage \
+            --entrypoint /bin/sh \
+            --env MINIO_TEST_ACCESS_KEY \
+            --env MINIO_TEST_SECRET_KEY \
+            --env MINIO_TEST_BUCKET \
+            quay.io/minio/mc:RELEASE.2025-07-21T05-28-08Z@sha256:fb8f773eac8ef9d6da0486d5dec2f42f219358bcb8de579d1623d518c9ebd4cc \
+            -c 'mc alias set contract http://hr-agent-ci-minio:9000 "$MINIO_TEST_ACCESS_KEY" "$MINIO_TEST_SECRET_KEY" >/dev/null && mc mb --ignore-existing contract/"$MINIO_TEST_BUCKET" >/dev/null'
+      - name: Start pinned ClamAV compatibility target
+        run: |
+          docker run --detach --rm \
+            --name hr-agent-ci-clamav \
+            --publish 127.0.0.1:3310:3310 \
+            --env CLAMAV_NO_FRESHCLAMD=true \
+            clamav/clamav@sha256:c3bfbf2a2c9abc1fc179e63832a9e8bfac901ede83853e3fa10acf6f1fb5c803
+          for attempt in $(seq 1 90); do
+            if python3 -c 'import socket; connection = socket.create_connection(("127.0.0.1", 3310), timeout=1); connection.sendall(b"zPING\0"); response = connection.recv(16); connection.close(); raise SystemExit(0 if response == b"PONG\0" else 1)' 2>/dev/null; then
+              break
+            fi
+            test "$attempt" -lt 90
+            sleep 1
+          done
+          # The immutable engine image intentionally embeds only a bootstrap
+          # database. Refresh it deterministically before the contract suite;
+          # otherwise freshclamd's randomized first check can leave CI using
+          # signatures older than the production 48-hour readiness boundary.
+          docker exec --user clamav hr-agent-ci-clamav \
+            freshclam --foreground --stdout
+          for attempt in $(seq 1 60); do
+            if python3 -c 'import datetime as d, socket; connection = socket.create_connection(("127.0.0.1", 3310), timeout=2); connection.sendall(b"zVERSION\0"); response = connection.recv(256).rstrip(b"\0").decode(); connection.close(); updated = d.datetime.strptime(response.split("/", 2)[2], "%a %b %d %H:%M:%S %Y").replace(tzinfo=d.UTC); age = (d.datetime.now(d.UTC) - updated).total_seconds(); raise SystemExit(0 if -3600 <= age <= 48 * 60 * 60 else 1)' 2>/dev/null; then
+              break
+            fi
+            test "$attempt" -lt 60
+            sleep 1
+          done
+      - name: Verify migration graph and schema upgrade
+        working-directory: apps/api
+        run: |
+          test "$(uv run alembic heads | wc -l | tr -d ' ')" = "1"
+          uv run alembic upgrade head
+          uv run alembic check
+          uv run alembic downgrade c8e2f4a6b901
+          uv run alembic upgrade head
+          uv run alembic check
+      - name: Prove migrated forced-RLS boundary
+        working-directory: apps/api
+        env:
+          TENANT_RLS_MODE: forced
+        run: uv run pytest -q tests/test_forced_rls_database.py
+      - name: Run API tests
+        working-directory: apps/api
+        run: uv run pytest -q
+      - name: Verify committed OpenAPI contract
+        working-directory: apps/api
+        run: |
+          uv run python -m app.scripts.export_openapi
+          git diff --exit-code -- openapi.json
+      - name: Audit installed API dependencies
+        working-directory: apps/api
+        run: uv run pip-audit --local
+      - name: Enforce production dependency license policy
+        working-directory: apps/api
+        run: >-
+          uv run pip-licenses --format=plain
+          --fail-on
+          'AGPL-3.0-only;AGPL-3.0-or-later;GPL-2.0-only;GPL-2.0-or-later;GPL-3.0-only;GPL-3.0-or-later;SSPL-1.0'
+      - name: Block high-severity static-analysis findings
+        working-directory: apps/api
+        run: uv run bandit -r app -lll -q
+      - name: Validate alert rules and firing behavior
+        run: |
+          docker run --rm --entrypoint /bin/promtool \
+            --volume "$PWD/ops/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro" \
+            --volume "$PWD/ops/observability/hr-agent-alerts.yml:/etc/prometheus/rules/hr-agent-alerts.yml:ro" \
+            --volume "/dev/null:/run/secrets/hr_agent_metrics_token:ro" \
+            prom/prometheus:v3.12.0@sha256:69f5241418838263316593f7274a304b095c40bcf22e57272865da91bd60a8ac \
+            check config /etc/prometheus/prometheus.yml
+          docker run --rm --entrypoint /bin/promtool \
+            --volume "$PWD/ops/observability:/rules:ro" \
+            prom/prometheus:v3.12.0@sha256:69f5241418838263316593f7274a304b095c40bcf22e57272865da91bd60a8ac \
+            check rules /rules/hr-agent-alerts.yml
+          docker run --rm --entrypoint /bin/promtool \
+            --volume "$PWD/ops/observability:/rules:ro" \
+            --workdir /rules \
+            prom/prometheus:v3.12.0@sha256:69f5241418838263316593f7274a304b095c40bcf22e57272865da91bd60a8ac \
+            test rules hr-agent-alerts.test.yml
+          docker run --rm --entrypoint /bin/amtool \
+            --volume "$PWD/ops/observability:/config:ro" \
+            prom/alertmanager:v0.32.1@sha256:51a825c2a40acc3e338fdd00d622e01ec090f72be2b3ea46be0839cd47a4d286 \
+            check-config /config/alertmanager.yml
+          docker run --rm \
+            --volume "$PWD/ops/observability/otel-collector.yml:/etc/otelcol-contrib/config.yaml:ro" \
+            --volume "$PWD/ops/observability/otel-trace-exporters.example.yml:/run/secrets/hr_agent_otel_trace_exporters:ro" \
+            --volume "/dev/null:/run/secrets/hr_agent_otel_receiver_certificate:ro" \
+            --volume "/dev/null:/run/secrets/hr_agent_otel_receiver_private_key:ro" \
+            --volume "/dev/null:/run/secrets/hr_agent_otel_receiver_bearer_tokens:ro" \
+            otel/opentelemetry-collector-contrib:0.159.0@sha256:1f2c54a30e713fac6b3ae77a1ec84010c2007e29ced8ec666214fc2f6739c1cc \
+            validate --config=/etc/otelcol-contrib/config.yaml
+          HR_AGENT_METRICS_TOKEN_FILE=/dev/null \
+            HR_AGENT_ALERT_WEBHOOK_URL_FILE=/dev/null \
+            HR_AGENT_OTEL_TRACE_EXPORTERS_FILE="$PWD/ops/observability/otel-trace-exporters.example.yml" \
+            HR_AGENT_OTEL_RECEIVER_CERTIFICATE_FILE=/dev/null \
+            HR_AGENT_OTEL_RECEIVER_PRIVATE_KEY_FILE=/dev/null \
+            HR_AGENT_OTEL_RECEIVER_BEARER_TOKENS_FILE=/dev/null \
+            HR_AGENT_PERSES_ENCRYPTION_KEY_FILE=/dev/null \
+            HR_AGENT_APPLICATION_OBSERVABILITY_NETWORK=hr-agent-private \
+            docker compose -f ops/observability/compose.reference.yml config --quiet
+          python3 -m py_compile \
+            ops/observability/test_alert_delivery.py \
+            ops/observability/test_dashboard_provisioning.py \
+            ops/observability/test_otel_collector.py
+          python3 ops/observability/test_otel_collector.py
+          python3 ops/observability/test_dashboard_provisioning.py
+          python3 ops/observability/test_alert_delivery.py
+      - name: Verify recovery safety harness
+        working-directory: apps/api
+        run: uv run pytest -q ../../ops/recovery/tests -rs
+      - name: Stop MinIO compatibility target
+        if: ${{ always() }}
+        run: |
+          docker rm --force hr-agent-ci-clamav || true
+          docker rm --force hr-agent-ci-minio || true
+          docker network rm hr-agent-ci-storage || true
+
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      AUTH_SECRET: ci-only-auth-secret-that-is-long-and-never-used-outside-ci
+      NEXTAUTH_SECRET: ci-only-auth-secret-that-is-long-and-never-used-outside-ci
+      AUTH_SESSION_SECRET: ci-only-independent-session-secret-that-is-never-used-outside-ci
+      ASSESSMENT_SESSION_SECRET: ci-only-independent-assessment-secret-never-used-outside-ci
+      API_BASE_URL: http://127.0.0.1:8000
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@d15e628ca66d93ee5f352c71671a7bc6a97af5c9 # v6.0.8
+        with:
+          version: 10.33.2
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 22.23.2
+          cache: pnpm
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+      - name: Install locked web dependencies
+        working-directory: apps/web
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        working-directory: apps/web
+        run: pnpm typecheck
+      - name: Verify generated API types
+        working-directory: apps/web
+        run: |
+          pnpm generate:api
+          git diff --exit-code -- lib/generated/api.ts
+          pnpm check:api-contracts
+      - name: Production build
+        working-directory: apps/web
+        run: pnpm build
+      - name: Block dependency advisories
+        working-directory: apps/web
+        run: pnpm audit
+      - name: Enforce production dependency license policy
+        working-directory: apps/web
+        run: pnpm licenses:check
+      - name: Install browser engines for release-gate tests
+        working-directory: apps/web
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - name: Run browser and accessibility release gates
+        working-directory: apps/web
+        run: pnpm test:e2e
+      - name: Upload browser failure evidence
+        if: ${{ failure() && !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: browser-gate-evidence-${{ github.sha }}
+          path: |
+            apps/web/output/playwright/report
+            apps/web/output/playwright/test-results
+          if-no-files-found: ignore
+          retention-days: 14
+
+  release-drills:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: [api]
+    services:
+      postgres:
+        image: postgres:16-alpine@sha256:4e6e670bb069649261c9c18031f0aded7bb249a5b6664ddec29c013a89310d50
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: hr_release_recovery_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d hr_release_recovery_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      valkey:
+        image: valkey/valkey:9.1.0-alpine@sha256:c9b77919daeba2c02ad954d0c844cc4e7142069d177b89c5fd771f405daf9e02
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "valkey-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      JWT_SECRET: ci-only-secret-that-is-long-and-never-used-outside-ci
+      TEST_VALKEY_URL: redis://localhost:6379/15
+      COMMUNICATIONS_WORKER_ENABLED: "false"
+      SCHEDULING_WORKER_ENABLED: "false"
+      WORKFLOW_WORKER_ENABLED: "false"
+      AI_WORKER_ENABLED: "false"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          version: "0.11.8"
+          enable-cache: true
+      - name: Install locked API dependencies
+        working-directory: apps/api
+        run: uv sync --locked --all-groups
+      - name: Migrate isolated recovery source
+        working-directory: apps/api
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/hr_release_recovery_test
+        run: |
+          uv run alembic upgrade head
+          uv run alembic check
+      - name: Run encrypted database and object restore/rollback drill
+        working-directory: apps/api
+        env:
+          RUN_RECOVERY_DRILL: "1"
+          HR_RECOVERY_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/hr_release_recovery_test
+          RECOVERY_PG_CONTAINER: ${{ job.services.postgres.id }}
+          RECOVERY_EVIDENCE_PATH: ${{ github.workspace }}/apps/api/output/recovery/recovery-drill.json
+        run: uv run pytest -q -s ../../ops/recovery/tests/test_live_recovery_drill.py
+      - name: Create and migrate isolated performance database
+        working-directory: apps/api
+        env:
+          TEST_DATABASE_ADMIN_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/hr_candidate_perf_test
+        run: |
+          uv run python -m app.scripts.create_release_test_database --name hr_candidate_perf_test
+          uv run alembic upgrade head
+          uv run alembic check
+      - name: Run 10,000-candidate p95 gate
+        working-directory: apps/api
+        env:
+          RUN_PERFORMANCE_TESTS: "1"
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/hr_candidate_perf_test
+          TEST_DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/hr_candidate_perf_test
+          PERFORMANCE_EVIDENCE_PATH: ${{ github.workspace }}/apps/api/output/performance/candidate-10k.json
+        run: uv run pytest -q -s tests/performance/test_candidate_10k.py
+      - name: Upload recovery and performance evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-drill-evidence-${{ github.sha }}
+          path: |
+            apps/api/output/recovery/recovery-drill.json
+            apps/api/output/performance/candidate-10k.json
+          if-no-files-found: error
+          retention-days: 30
+
+  supply-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [api, web, release-drills]
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Scan the complete repository for secrets
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: secret
+          severity: HIGH,CRITICAL
+          format: table
+          exit-code: "1"
+      - name: Scan active release infrastructure configuration
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: misconfig
+          # README.md designates v1/ as an immutable reference snapshot. It is
+          # neither built nor deployed by this release; secrets are still
+          # scanned above, while deployment posture is enforced on active code.
+          skip-dirs: v1
+          severity: HIGH,CRITICAL
+          format: table
+          exit-code: "1"
+      - name: Build API image
+        run: docker build --tag hr-agent-api:${{ github.sha }} apps/api
+      - name: Build web image
+        run: docker build --tag hr-agent-web:${{ github.sha }} apps/web
+      - name: Verify non-root runtime user
+        run: |
+          test "$(docker image inspect hr-agent-api:${{ github.sha }} --format '{{.Config.User}}')" = "app"
+          test "$(docker image inspect hr-agent-web:${{ github.sha }} --format '{{.Config.User}}')" = "app"
+          docker run --rm --entrypoint sh hr-agent-api:${{ github.sha }} \
+            -c 'test "$(id -u):$(id -g)" = "10001:10001"'
+          docker run --rm --entrypoint sh hr-agent-web:${{ github.sha }} \
+            -c 'test "$(id -u):$(id -g)" = "10001:10001"'
+      - name: Block reachable high and critical image advisories
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: hr-agent-api:${{ github.sha }}
+          scanners: vuln
+          vuln-type: os,library
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          format: table
+          exit-code: "1"
+          skip-setup-trivy: true
+      - name: Block reachable high and critical web image advisories
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: hr-agent-web:${{ github.sha }}
+          scanners: vuln
+          vuln-type: os,library
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          format: table
+          exit-code: "1"
+          skip-setup-trivy: true
+      - name: Generate API image SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        with:
+          image: hr-agent-api:${{ github.sha }}
+          format: spdx-json
+          artifact-name: hr-agent-api-${{ github.sha }}.spdx.json
+          output-file: hr-agent-api.spdx.json
+          upload-artifact: false
+          upload-release-assets: false
+      - name: Generate web image SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
+        with:
+          image: hr-agent-web:${{ github.sha }}
+          format: spdx-json
+          artifact-name: hr-agent-web-${{ github.sha }}.spdx.json
+          output-file: hr-agent-web.spdx.json
+          upload-artifact: false
+          upload-release-assets: false
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Export and keylessly sign the exact image artifact and SBOM
+        run: |
+          docker save --output hr-agent-api.tar hr-agent-api:${{ github.sha }}
+          docker save --output hr-agent-web.tar hr-agent-web:${{ github.sha }}
+          cosign sign-blob --yes --bundle hr-agent-api.tar.sigstore.json hr-agent-api.tar
+          cosign sign-blob --yes --bundle hr-agent-api.spdx.sigstore.json hr-agent-api.spdx.json
+          cosign sign-blob --yes --bundle hr-agent-web.tar.sigstore.json hr-agent-web.tar
+          cosign sign-blob --yes --bundle hr-agent-web.spdx.sigstore.json hr-agent-web.spdx.json
+      - name: Verify release-evidence signatures
+        run: |
+          cosign verify-blob --bundle hr-agent-api.tar.sigstore.json --certificate-identity-regexp "^https://github.com/${{ github.repository }}/.github/workflows/ci.yml@refs/(heads|pull)/.+$" --certificate-oidc-issuer https://token.actions.githubusercontent.com hr-agent-api.tar
+          cosign verify-blob --bundle hr-agent-api.spdx.sigstore.json --certificate-identity-regexp "^https://github.com/${{ github.repository }}/.github/workflows/ci.yml@refs/(heads|pull)/.+$" --certificate-oidc-issuer https://token.actions.githubusercontent.com hr-agent-api.spdx.json
+          cosign verify-blob --bundle hr-agent-web.tar.sigstore.json --certificate-identity-regexp "^https://github.com/${{ github.repository }}/.github/workflows/ci.yml@refs/(heads|pull)/.+$" --certificate-oidc-issuer https://token.actions.githubusercontent.com hr-agent-web.tar
+          cosign verify-blob --bundle hr-agent-web.spdx.sigstore.json --certificate-identity-regexp "^https://github.com/${{ github.repository }}/.github/workflows/ci.yml@refs/(heads|pull)/.+$" --certificate-oidc-issuer https://token.actions.githubusercontent.com hr-agent-web.spdx.json
+      - name: Upload signed release evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: signed-api-image-and-sbom-${{ github.sha }}
+          path: |
+            hr-agent-api.tar
+            hr-agent-api.tar.sigstore.json
+            hr-agent-api.spdx.json
+            hr-agent-api.spdx.sigstore.json
+            hr-agent-web.tar
+            hr-agent-web.tar.sigstore.json
+            hr-agent-web.spdx.json
+            hr-agent-web.spdx.sigstore.json
+          if-no-files-found: error
+          retention-days: 30

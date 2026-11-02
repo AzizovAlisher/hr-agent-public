@@ -1,0 +1,1478 @@
+{
+  "schema_version": 1,
+  "candidate": "E18",
+  "composition": "Each keyed record is hash-bound to its exact ledger row and joins severity/status/area, shared tenant-role-locale-device-environment context, verified implementation commit, executable current-tree regression locators, the row's specific independent retest, adjacent disposition, and versioned evidence paths. This index enforces traceability; it does not replace execution artifacts or human review.",
+  "contexts": {
+    "api_security": {
+      "tenant": "Two isolated organizations (alpha and beta) with colliding identifiers; preserved preview where the ledger row names it.",
+      "role": "Admin, recruiter, hiring manager, interviewer, restricted/disabled user, and scoped API key as applicable to the row.",
+      "locale": "RU and EN for public/problem responses; N/A for database-only assertions.",
+      "device_browser_or_na": "N/A — authoritative API, worker, storage, or PostgreSQL boundary.",
+      "environment": "Fresh explicitly named *_test PostgreSQL database with live Valkey/MinIO/ClamAV when required."
+    },
+    "hiring_domain": {
+      "tenant": "Alpha/beta tenant fixtures plus duplicate, multi-position, repeated-application, and preserved-preview records as applicable.",
+      "role": "Admin, recruiter, assigned/unassigned hiring manager/interviewer, and restricted identity.",
+      "locale": "RU and EN golden/domain journeys where copy is visible; otherwise N/A.",
+      "device_browser_or_na": "N/A for API/database cases; browser context is supplied by web_matrix when applicable.",
+      "environment": "Fresh *_test database at migration head with deterministic domain fixtures."
+    },
+    "runtime_integration": {
+      "tenant": "Two tenant fixtures with isolated provider connections, jobs, cursors, webhooks, budgets, and idempotency keys.",
+      "role": "Admin/recruiter/assigned manager/scoped API key and durable worker identity as applicable.",
+      "locale": "RU/EN for visible failure/capability states; otherwise N/A.",
+      "device_browser_or_na": "N/A — provider simulator, HTTP contract, durable job, or AI gateway boundary.",
+      "environment": "Fresh *_test database plus provider simulators and live Valkey/object storage/scanner where required."
+    },
+    "web_matrix": {
+      "tenant": "Mock alpha/beta identities plus the preserved-preview organization for real-stack checks.",
+      "role": "Admin, recruiter, read-only interviewer, restricted identity, and public capability holder as applicable.",
+      "locale": "RU and EN.",
+      "device_browser_or_na": "Chromium 1440x900, Chromium touch 320x568, Firefox 1024x768, Chromium dark/reduced 768x1024; pinned Linux WebKit 390x844 is hosted authority.",
+      "environment": "Optimized Next.js build with isolated mock API/HTTPS ports; strict real stack where named."
+    },
+    "operations": {
+      "tenant": "Disposable source/target tenants and protected preview where the ledger row names preserved-data evidence.",
+      "role": "Release operator, runtime worker, non-owner RLS role, and recovery operator as applicable.",
+      "locale": "N/A — operational and supply-chain boundary.",
+      "device_browser_or_na": "N/A; Ubuntu hosted runner, pinned containers, or local recovery host.",
+      "environment": "Disposable *_test databases, pinned containers, isolated buckets/networks, and exact Git revision."
+    },
+    "preserved_data": {
+      "tenant": "Protected recruitment_v2_preview organization; original recruitment_v2 remains read-only and untouched.",
+      "role": "Authorized preview recruiter/admin plus wrong-tenant and anonymous denial probes.",
+      "locale": "RU and EN preview journeys.",
+      "device_browser_or_na": "Chromium/Firefox real-stack review; N/A for cutover, hash, backup, and worker assertions.",
+      "environment": "Protected preview, canonical private buckets, verified backup/restore, and digest-bound cleanup worker."
+    }
+  },
+  "records": {
+    "SEC-001": {
+      "owner": "security_data",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_private_object_storage.py, apps/api/tests/test_security_boundaries.py and exercise the pre-fix condition recorded for SEC-001: Removed the private storage mount; authenticated downloads now enforce tenant and field policy, safe disposition, `no-store`, and sensitive-read audit. Upload quarantine, type/size/scanner, orphan cleanup, and erasure suites pass.",
+      "regression_locators": [
+        "apps/api/tests/test_private_object_storage.py",
+        "apps/api/tests/test_security_boundaries.py"
+      ],
+      "independent_retest": "Anonymous/wrong-tenant download, malformed/polyglot/active-SVG/malware, cross-tenant file, export, and erasure canaries pass under forced RLS.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_private_object_storage.py",
+        "apps/api/tests/test_security_boundaries.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 1,
+      "status": "closed",
+      "area": "private files",
+      "ledger_row_sha256": "8f0efd1e9bc4b2291f713c031e0193ab8722ac14011b069b1e9ad2871e59c1d7"
+    },
+    "SEC-002": {
+      "owner": "security_data",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_authorization_policy.py, apps/api/tests/test_openapi_authorization_matrix.py, apps/api/tests/test_forced_rls_database.py and exercise the pre-fix condition recorded for SEC-002: Every OpenAPI operation maps to a canonical action; role, assignment, override, API-key scope, and field-policy enforcement is fail-closed.",
+      "regression_locators": [
+        "apps/api/tests/test_authorization_policy.py",
+        "apps/api/tests/test_openapi_authorization_matrix.py",
+        "apps/api/tests/test_forced_rls_database.py"
+      ],
+      "independent_retest": "The current generated OpenAPI artifact and canonical authorization catalog contain the same 360 operations and have zero handwritten wire DTO residual. The exact final-tree API/database/integration suite collected 855: 845 passed, 10 deliberate opt-in skips, 0 failed; all nine forced-RLS skips then passed separately. Hosted exact-revision CI remains under DEF-055.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_authorization_policy.py",
+        "apps/api/tests/test_openapi_authorization_matrix.py",
+        "apps/api/tests/test_forced_rls_database.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 1,
+      "status": "closed",
+      "area": "authorization",
+      "ledger_row_sha256": "13ab4e10b5607322256b5467c3e2a0e5d9ffb2950a84b226a9397c52b951c4ed"
+    },
+    "SEC-003": {
+      "owner": "security_data",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_auth_security.py, apps/api/tests/test_auth_sessions.py and exercise the pre-fix condition recorded for SEC-003: Added admin TOTP, generic throttled login, password boundaries, refresh rotation, session versioning/revocation, secure logout, disabled-user rejection, and concurrent last-admin protection.",
+      "regression_locators": [
+        "apps/api/tests/test_auth_security.py",
+        "apps/api/tests/test_auth_sessions.py"
+      ],
+      "independent_retest": "Authentication matrix, cross-replica revocation, password/role/user change, logout, and last-admin races pass.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_auth_security.py",
+        "apps/api/tests/test_auth_sessions.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "authentication/session",
+      "ledger_row_sha256": "bf25093eb7bfc25a60fb347ab452f024eea25953c9a95508020ac975de081e2f"
+    },
+    "SEC-004": {
+      "owner": "security_data",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_public_abuse.py, apps/api/tests/test_shortlist_security.py and exercise the pre-fix condition recorded for SEC-004: Public tokens are hashed, expiring, revocable, rotatable, replay-aware, non-enumerating, rate-limited, and returned only on create/rotate.",
+      "regression_locators": [
+        "apps/api/tests/test_public_abuse.py",
+        "apps/api/tests/test_shortlist_security.py"
+      ],
+      "independent_retest": "Valid, malformed, expired, consumed, revoked, replayed, and concurrent tokens pass with semantic 404/410 and no-store/noindex/no-referrer headers.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_public_abuse.py",
+        "apps/api/tests/test_shortlist_security.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "public capabilities",
+      "ledger_row_sha256": "760206206e68d905a20a19f44e2d9a4b5d8739e36aee25beb44a69d245b78731"
+    },
+    "PRIV-001": {
+      "owner": "security_data",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_privacy_erasure_graph.py, apps/api/tests/test_retention_derived_privacy.py and exercise the pre-fix condition recorded for PRIV-001: Erasure traverses canonical/derived records, private objects, prompts/chat, workflow/provider payloads, communications, exports, caches, and backup-expiry manifests. Strong identifiers are boundary-matched so ordinary names, roles, and substrings are not over-erased.",
+      "regression_locators": [
+        "apps/api/tests/test_privacy_erasure_graph.py",
+        "apps/api/tests/test_retention_derived_privacy.py"
+      ],
+      "independent_retest": "Erasure canaries disappear from live and derived stores; the authenticated E14 full-object archive remains retained and controlled, and the current tenant-recovery safety harness passes. The current attachment parser and privacy graph suites also exercise unsupported/tampered content and atomic fail-closed behavior.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_privacy_erasure_graph.py",
+        "apps/api/tests/test_retention_derived_privacy.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "privacy/erasure",
+      "ledger_row_sha256": "87b2de0e43a0caac53a4fcce1af78989d8a834c821fc65ff31583433a414cae8"
+    },
+    "DOM-001": {
+      "owner": "hiring_domain",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "hiring_domain",
+      "reproduction": "Using the resolved 'hiring_domain' tenant/role/locale/device/environment context, execute apps/api/tests/test_application_cycle_runtime.py, apps/api/tests/test_pilot_golden_journey.py and exercise the pre-fix condition recorded for DOM-001: Added first-class applications, stage events, versioned evaluations, compatibility adapters, status constraints, normalized contacts, and multi-position identity behavior.",
+      "regression_locators": [
+        "apps/api/tests/test_application_cycle_runtime.py",
+        "apps/api/tests/test_pilot_golden_journey.py"
+      ],
+      "independent_retest": "All 1,158 legacy scores reconcile one-to-one with applications and stage events; broken links and scores without applications are zero; RU/EN golden journey passes.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_application_cycle_runtime.py",
+        "apps/api/tests/test_pilot_golden_journey.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 1,
+      "status": "closed",
+      "area": "applications/data",
+      "ledger_row_sha256": "02cd5af0f0c4de12ea377b4df53a70a2706f58eb3994d958b62b75fe45d9c833"
+    },
+    "DOM-002": {
+      "owner": "hiring_domain",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "hiring_domain",
+      "reproduction": "Using the resolved 'hiring_domain' tenant/role/locale/device/environment context, execute apps/api/tests/test_applications_assessments.py, apps/api/tests/test_assessment_schema.py and exercise the pre-fix condition recorded for DOM-002: Added immutable templates/versions/sections/questions, conditions, invitations, attempts, autosave/resume, expiry, accommodations, deterministic/manual grading, retakes, result review, and application linkage.",
+      "regression_locators": [
+        "apps/api/tests/test_applications_assessments.py",
+        "apps/api/tests/test_assessment_schema.py"
+      ],
+      "independent_retest": "Every native question/rule state and the assessment-to-interview-to-offer golden journey pass, including assigned/unassigned scorecard access.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_applications_assessments.py",
+        "apps/api/tests/test_assessment_schema.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "assessments/structured hiring",
+      "ledger_row_sha256": "83583815e8fedf14624b18a609c21a547f119d1ee9df5a3baf03411d1929650a"
+    },
+    "AI-001": {
+      "owner": "runtime_integration",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "runtime_integration",
+      "reproduction": "Using the resolved 'runtime_integration' tenant/role/locale/device/environment context, execute apps/api/tests/test_llm_gateway.py, apps/api/tests/test_ai_fairness_contract.py and exercise the pre-fix condition recorded for AI-001: Routed all AI features through the tenant gateway with managed-provider opt-in, private-endpoint allowlist, SSRF defenses, redaction, provenance, structured output, atomic budgets, and human approval.",
+      "regression_locators": [
+        "apps/api/tests/test_llm_gateway.py",
+        "apps/api/tests/test_ai_fairness_contract.py"
+      ],
+      "independent_retest": "Route inventory, prompt-injection, PII canary, SSRF/redirect/DNS, null/zero/cap budget races, fallback, and override audit tests pass.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_llm_gateway.py",
+        "apps/api/tests/test_ai_fairness_contract.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 1,
+      "status": "closed",
+      "area": "AI privacy/routing",
+      "ledger_row_sha256": "85d85c95df3736d5ada063c6f207a7fcf12060e3b5a6ea455024f1b7c5125f65"
+    },
+    "RUN-001": {
+      "owner": "runtime_integration",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "runtime_integration",
+      "reproduction": "Using the resolved 'runtime_integration' tenant/role/locale/device/environment context, execute apps/api/tests/test_worker_claims.py, apps/api/tests/test_workflows.py and exercise the pre-fix condition recorded for RUN-001: Moved long/external work to leased PostgreSQL jobs/outbox with bounded retry, DLQ, cancellation, heartbeat, idempotency, and exact-once receipts.",
+      "regression_locators": [
+        "apps/api/tests/test_worker_claims.py",
+        "apps/api/tests/test_workflows.py"
+      ],
+      "independent_retest": "A real 3,000-row import survived worker SIGKILL, lease reclaim, and retry: one job, 30 chunks, 3,000 distinct effects, one usage effect; replay made no change.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_worker_claims.py",
+        "apps/api/tests/test_workflows.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "durable work",
+      "ledger_row_sha256": "1cf09884554c766b7517d8f20bd33b35a2ba1db35454d67a6faa9eab38243765"
+    },
+    "INT-001": {
+      "owner": "runtime_integration",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "runtime_integration",
+      "reproduction": "Using the resolved 'runtime_integration' tenant/role/locale/device/environment context, execute apps/api/tests/test_integration_provider_contracts.py, apps/api/tests/test_integration_runtime.py and exercise the pre-fix condition recorded for INT-001: Implemented encrypted lifecycle/capability/health/cursor/jobs, signed versioned webhooks, replay protection, retries, simulators, explicit sandbox state, and capability gating for required connectors.",
+      "regression_locators": [
+        "apps/api/tests/test_integration_provider_contracts.py",
+        "apps/api/tests/test_integration_runtime.py"
+      ],
+      "independent_retest": "Connect/refresh/revoke, duplicate/out-of-order callbacks, timeout/rate-limit/outage/recovery, DST/conflict, and signed webhook contract suites pass. Communication and sourcing callbacks now share the raw-body signature/timestamp/envelope/event-fingerprint contract. Live account certification remains external.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_integration_provider_contracts.py",
+        "apps/api/tests/test_integration_runtime.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "connector contract",
+      "ledger_row_sha256": "ae3fc31abb1fb8fe0163aa8bfe843e67acbf46695a220307c2951285ac122d5c"
+    },
+    "UX-001": {
+      "owner": "frontend_ux",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/web/e2e/public-accessibility.spec.ts, apps/web/e2e/ui-recovery-states.spec.ts and exercise the pre-fix condition recorded for UX-001: Completed mobile shell/chat, keyboard alternatives, semantic controls/charts, focus/announcements, contrast, reduced motion, touch targets, RU/EN, and truthful retry/partial-failure states.",
+      "regression_locators": [
+        "apps/web/e2e/public-accessibility.spec.ts",
+        "apps/web/e2e/ui-recovery-states.spec.ts"
+      ],
+      "independent_retest": "The last complete pre-final-hardening four-project web baseline passed 107 tests with 9 intentional skips; the focused recovery-state pack passed 12/12 plus 8/8 adjacent checks, and axe had no serious/critical findings. Exact final-tree web and Linux WebKit execution remain CI release gates under DEF-055.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/public-accessibility.spec.ts",
+        "apps/web/e2e/ui-recovery-states.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "responsive/accessibility",
+      "ledger_row_sha256": "0ab5e215f59d23a8510cefec4c7fff3ba6d5135aa3abb4725afb5e7f65a2c5cc"
+    },
+    "DEP-001": {
+      "owner": "integration_lead",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "operations",
+      "reproduction": "Using the resolved 'operations' tenant/role/locale/device/environment context, execute .github/workflows/ci.yml and exercise the pre-fix condition recorded for DEP-001: Upgraded/froze dependencies, hardened non-root images, added audits, secret/misconfiguration/license gates, and SPDX SBOM generation.",
+      "regression_locators": [
+        ".github/workflows/ci.yml"
+      ],
+      "independent_retest": "Current local candidate scans report zero reachable high/critical image or dependency findings, zero Bandit-high, and no prohibited licenses; both release images execute as UID/GID 10001. Exact-revision CI/signing remains a release gate.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        ".github/workflows/ci.yml",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 1,
+      "status": "closed",
+      "area": "supply chain",
+      "ledger_row_sha256": "7d09f55be440919717cc84fb42420a0f13864104984d770753afb21d1bcdea6a"
+    },
+    "OPS-001": {
+      "owner": "integration_lead",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "operations",
+      "reproduction": "Using the resolved 'operations' tenant/role/locale/device/environment context, execute ops/recovery/tests/test_hr_recovery.py, apps/api/tests/test_observability.py, apps/api/tests/performance/test_candidate_10k.py and exercise the pre-fix condition recorded for OPS-001: Added dependency-aware readiness, separate workers, metrics/traces/alerts, encrypted backups, authenticated restore, expand/contract rollback, and runbooks.",
+      "regression_locators": [
+        "ops/recovery/tests/test_hr_recovery.py",
+        "apps/api/tests/test_observability.py",
+        "apps/api/tests/performance/test_candidate_10k.py"
+      ],
+      "independent_retest": "Two API/two worker topology, 10k p95 gates, retained 144-object restore/rollback, 36-pass recovery harness plus disposable drill, 15 alert-rule groups/39 assertions covering all 17 names, and live firing/resolved delivery pass.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "ops/recovery/tests/test_hr_recovery.py",
+        "apps/api/tests/test_observability.py",
+        "apps/api/tests/performance/test_candidate_10k.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "operations/recovery",
+      "ledger_row_sha256": "f2b69d7322fabe419b897a7b779ba949897200304d9a0e63eb7b9d067ceb1d3a"
+    },
+    "DEF-014": {
+      "owner": "hiring_domain",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "hiring_domain",
+      "reproduction": "Using the resolved 'hiring_domain' tenant/role/locale/device/environment context, execute apps/api/tests/test_candidate_search.py and exercise the pre-fix condition recorded for DEF-014: Bounded each transitive duplicate group to 20 visible members while preserving total `candidate_count`, `has_more_candidates`, stable ordering, and cursor totals.",
+      "regression_locators": [
+        "apps/api/tests/test_candidate_search.py"
+      ],
+      "independent_retest": "Independent genuine 3,000-member transitive-chain retest returned 4,300 bytes in 0.1172 s, 20 visible/3,000 total, stable ordering, correct normal groups/cursors, and no tenant-B marker.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_candidate_search.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "duplicate discovery",
+      "ledger_row_sha256": "3de29ddef1918bd5e5b279329b8992df06bc947aa0ece2a3084c97a3ad76e6f7"
+    },
+    "DEF-015": {
+      "owner": "security_data",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "operations",
+      "reproduction": "Using the resolved 'operations' tenant/role/locale/device/environment context, execute apps/api/tests/test_maintenance.py, apps/api/tests/test_migration_guards.py and exercise the pre-fix condition recorded for DEF-015: E14 migration `fe48b7c1d902` grants the broker the read needed by security-definer maintenance without broadening runtime-role access.",
+      "regression_locators": [
+        "apps/api/tests/test_maintenance.py",
+        "apps/api/tests/test_migration_guards.py"
+      ],
+      "independent_retest": "Independent E13 fail-safe → E14 success → downgrade fail-safe/no partial delete → re-upgrade success drill passed; live readiness reports 113/113 protected tables under forced RLS.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_maintenance.py",
+        "apps/api/tests/test_migration_guards.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "worker maintenance",
+      "ledger_row_sha256": "ace877802a4697b5f8f75e0360055f0cd751a0ac0a7051454471be54f25177e1"
+    },
+    "DEF-016": {
+      "owner": "integration_lead",
+      "fix_commit": "1f1f516212e33fa1880043c147436f91db192781",
+      "context": "operations",
+      "reproduction": "Using the resolved 'operations' tenant/role/locale/device/environment context, execute ops/recovery/tests/test_hr_recovery.py and exercise the pre-fix condition recorded for DEF-016: Restore now accepts an empty pre-created target, rechecks safety, enforces 0700/0600 modes, rejects links, and atomically cleans partial copies.",
+      "regression_locators": [
+        "ops/recovery/tests/test_hr_recovery.py"
+      ],
+      "independent_retest": "Independent full restore and unsafe-symlink partial-copy rollback passed; the target was absent after cleanup in both success and failure flows.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "ops/recovery/tests/test_hr_recovery.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "recovery",
+      "ledger_row_sha256": "8361ab5a6108715a67e71620809d514d97c6786710d6d8f3c6546c889dd06271"
+    },
+    "DEF-017": {
+      "owner": "frontend_ux",
+      "fix_commit": "0e47c4b4656f13d01ea56940f39b4d3c9657a4e3",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/web/e2e/public-accessibility.spec.ts and exercise the pre-fix condition recorded for DEF-017: Replaced a page-wide text selector with an exact level-2 heading-role assertion. The CI trace showed Next.js briefly retained the same text in a hidden streaming container, while the rendered and accessibility trees exposed exactly one heading.",
+      "regression_locators": [
+        "apps/web/e2e/public-accessibility.spec.ts"
+      ],
+      "independent_retest": "Exact CI-mode mobile workflow passed independently eight times on fresh servers; shortlist privacy/axe/overflow and offer accept/reload persistence all passed, with no adjacent product or accessibility defect.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/public-accessibility.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 3,
+      "status": "closed",
+      "area": "browser test harness",
+      "ledger_row_sha256": "48be33c39d1dd845d32c1cd2e235dda7a8a788f7d11acace942879f4288507bc"
+    },
+    "DEF-018": {
+      "owner": "frontend_ux",
+      "fix_commit": "d3a6a165f4e529d681170b8fd21b28607605f839",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/web/e2e/public-accessibility.spec.ts and exercise the pre-fix condition recorded for DEF-018: Replaced the read-only position's page-wide email-text assertion with a unique semantic candidate-link assertion. The CI trace captured a transient hidden Next.js `S:0` streaming copy, while the screenshot and accessibility tree exposed exactly one ranked-candidate link.",
+      "regression_locators": [
+        "apps/web/e2e/public-accessibility.spec.ts"
+      ],
+      "independent_retest": "Exact CI-mode Chromium workflow passed 18 times across two independent runs; the complete Chromium desktop/mobile, Firefox, and dark/reduced-motion matrix passed 38 tests with 6 expected skips. Linux WebKit remains enforced by exact-revision CI because the local macOS engine segfaults before page creation.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/public-accessibility.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 3,
+      "status": "closed",
+      "area": "browser test harness",
+      "ledger_row_sha256": "097f2e0e1008f674628977d3d6b661ce5fb0a3706d9477afda71e540fceefd95"
+    },
+    "DEF-019": {
+      "owner": "security_data",
+      "fix_commit": "7799b599421549fc08ed11ca12b5034826e1fdef",
+      "context": "operations",
+      "reproduction": "Using the resolved 'operations' tenant/role/locale/device/environment context, execute apps/api/tests/test_private_object_storage.py and exercise the pre-fix condition recorded for DEF-019: Made the digest-pinned MinIO reference target a mandatory API-suite dependency, so the live `S3BlobStore` compatibility case can no longer be silently skipped in release CI.",
+      "regression_locators": [
+        "apps/api/tests/test_private_object_storage.py"
+      ],
+      "independent_retest": "Independent isolated PostgreSQL/MinIO verification passed real put → promote → stat → read → quarantine cleanup → delete behavior; the bucket was empty afterward and the disposable containers/network were removed.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_private_object_storage.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "MinIO compatibility",
+      "ledger_row_sha256": "7150093940a505baeeac697811f54dfce6e7c8335cd62f09ddf94df5fc302a67"
+    },
+    "DEF-020": {
+      "owner": "integration_lead",
+      "fix_commit": "7799b599421549fc08ed11ca12b5034826e1fdef",
+      "context": "operations",
+      "reproduction": "Using the resolved 'operations' tenant/role/locale/device/environment context, execute .github/workflows/ci.yml and exercise the pre-fix condition recorded for DEF-020: Strengthened the image gate from checking the configured username alone to executing both release images and requiring runtime UID/GID `10001:10001`.",
+      "regression_locators": [
+        ".github/workflows/ci.yml"
+      ],
+      "independent_retest": "Independent inspection and runtime execution confirmed `Config.User=app` and UID/GID `10001:10001` for both current E14 API and web images.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        ".github/workflows/ci.yml",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 3,
+      "status": "closed",
+      "area": "container identity gate",
+      "ledger_row_sha256": "2204c1aafa71cbe00064135ace03c53e5081bc4f71a6cd74fd3355361602db95"
+    },
+    "DEF-021": {
+      "owner": "frontend_ux",
+      "fix_commit": "e7fbcce067ccbf9b94b32ed98a9eeb8fd4ffd1ca",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/web/e2e/enterprise-approval-policy.spec.ts and exercise the pre-fix condition recorded for DEF-021: Synchronized the approval-policy persistence test with the exact successful Next.js RSC refetch and the React transition's enabled state before forcing reload or running axe. The failing Firefox trace showed the test reloaded 11.4 ms after `router.refresh()` started, causing two valid navigations to abort one another while the save and persisted policy had already succeeded.",
+      "regression_locators": [
+        "apps/web/e2e/enterprise-approval-policy.spec.ts"
+      ],
+      "independent_retest": "The final candidate passed 20/20 independent Firefox stress cycles plus Chromium desktop/mobile, Firefox, and dark/reduced-motion profiles; EN/RU persistence, keyboard toggle, toast, axe, and overflow assertions all passed. Linux WebKit remains enforced in exact-revision CI.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/enterprise-approval-policy.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 3,
+      "status": "closed",
+      "area": "browser test harness",
+      "ledger_row_sha256": "780dcca8c111d74c6cbe894514913cc294aea41004f2125ea0dbf04cc50645ce"
+    },
+    "DEF-022": {
+      "owner": "security_data",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_malware_scanner_contract.py, apps/api/tests/test_observability.py and exercise the pre-fix condition recorded for DEF-022: Readiness previously proved only scanner reachability and the reference topology pinned an outdated ClamAV patch. It now parses the ClamAV version response, fails closed for signatures older than the fixed 48-hour threshold, and pins official ClamAV Alpine LTS 1.4.6 by digest.",
+      "regression_locators": [
+        "apps/api/tests/test_malware_scanner_contract.py",
+        "apps/api/tests/test_observability.py"
+      ],
+      "independent_retest": "Live compatibility covers version/freshness, clean scan, EICAR detection, outage, stale/future/malformed signature metadata, and readiness/alert threshold parity.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_malware_scanner_contract.py",
+        "apps/api/tests/test_observability.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "malware readiness",
+      "ledger_row_sha256": "0c4fb6722fabf752764732755d8cbd9eb2d0684314f21dc499f875e587d24f1a"
+    },
+    "DEF-023": {
+      "owner": "security_data",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_observability.py, apps/web/e2e/real-stack/golden-journey.spec.ts and exercise the pre-fix condition recorded for DEF-023: Public readiness previously exposed internal migration, queue, storage, and worker details. `GET /health/ready` now returns only `status` and `checked_at` with `no-store`; component detail moved to `GET /enterprise/operations/readiness` behind `enterprise.manage`.",
+      "regression_locators": [
+        "apps/api/tests/test_observability.py",
+        "apps/web/e2e/real-stack/golden-journey.spec.ts"
+      ],
+      "independent_retest": "Thirty concurrent public probes share one cache refresh and contain no private detail; authorized detail succeeds and unauthorized/restricted access is denied. The strict real-stack journeys assert both surfaces.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_observability.py",
+        "apps/web/e2e/real-stack/golden-journey.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "readiness information disclosure",
+      "ledger_row_sha256": "9ded94582f73679345cbf24c465c5d6dcc92d958cdbac28fc84ab40fcc974243"
+    },
+    "DEF-024": {
+      "owner": "runtime_integration",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "runtime_integration",
+      "reproduction": "Using the resolved 'runtime_integration' tenant/role/locale/device/environment context, execute apps/api/tests/test_integration_http_security.py, apps/api/tests/test_communications.py and exercise the pre-fix condition recorded for DEF-024: Communication sandbox and generic-source intake now require bounded raw bodies, HMAC-SHA256, a timestamp window, versioned event envelopes, and event-ID/payload-fingerprint persistence; same-event/different-payload reuse is rejected. Migration `b74e1d9c0a32` adds the communication event/fingerprint pair and per-account uniqueness.",
+      "regression_locators": [
+        "apps/api/tests/test_integration_http_security.py",
+        "apps/api/tests/test_communications.py"
+      ],
+      "independent_retest": "Missing, invalid, stale, tampered, oversized, concurrent duplicate, exact replay, conflict, cross-tenant, and invalid-envelope tests pass for communication and source callbacks.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_integration_http_security.py",
+        "apps/api/tests/test_communications.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "inbound webhook authenticity/replay",
+      "ledger_row_sha256": "9822ee8ec7c0053a9c2595be5cc74b35d312cc5380d970f4fa8038894d789e08"
+    },
+    "DEF-025": {
+      "owner": "integration_lead",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "operations",
+      "reproduction": "Using the resolved 'operations' tenant/role/locale/device/environment context, execute ops/recovery/tests/test_tenant_recovery.py, ops/recovery/tests/test_live_tenant_recovery_drill.py and exercise the pre-fix condition recorded for DEF-025: Tenant backup/restore now uses a SELECT-only non-bypass source role, one exported repeatable-read snapshot, row-by-row tenant dump proof, tenant/category-bound legacy objects, target advisory locking and ownership sentinels, atomic authenticated evidence, and ownership-safe rollback.",
+      "regression_locators": [
+        "ops/recovery/tests/test_tenant_recovery.py",
+        "ops/recovery/tests/test_live_tenant_recovery_drill.py"
+      ],
+      "independent_retest": "Recovery harness passes 36 tests with 3 opt-in skips; the separately enabled disposable PostgreSQL tenant backup/restore/rollback drill passes 1/1, including concurrency and excluded-tenant canaries.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "ops/recovery/tests/test_tenant_recovery.py",
+        "ops/recovery/tests/test_live_tenant_recovery_drill.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "tenant recovery isolation",
+      "ledger_row_sha256": "8723a41c0867b5e1fa4a8868ce6ccaa06dfcffa40f61db6c196ffd0a911cd13c"
+    },
+    "DEF-026": {
+      "owner": "integration_lead",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "operations",
+      "reproduction": "Using the resolved 'operations' tenant/role/locale/device/environment context, execute apps/web/e2e/real-stack/golden-journey.spec.ts and exercise the pre-fix condition recorded for DEF-026: A mock-only browser matrix could not prove Next.js BFF, FastAPI, PostgreSQL RLS, Valkey, MinIO, worker, file, authorization, and persistence behavior as one system. The isolated real-stack fixture now starts those actual services and fails on reuse or dirty state.",
+      "regression_locators": [
+        "apps/web/e2e/real-stack/golden-journey.spec.ts"
+      ],
+      "independent_retest": "Strict local runs pass 2/2: one Chromium and one Firefox RU/EN journey. Pinned Playwright 1.62.1 Linux WebKit is configured as an exact-revision CI job and is not claimed as locally executed.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/real-stack/golden-journey.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "real-stack coverage",
+      "ledger_row_sha256": "d485a51a6b8329c4fd2b7b16a08a81165ab9b2e8fc9d8d73696d7cbf340ec1f7"
+    },
+    "DEF-027": {
+      "owner": "frontend_ux",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/web/e2e/position-draft-isolation.spec.ts and exercise the pre-fix condition recorded for DEF-027: Position-draft conversations, requisition text, compensation, and attachment names previously used one unscoped browser key and could reappear after switching tenants on a shared browser. Draft storage is now v3-scoped to authenticated organization and user; unowned v1/v2 keys are deleted and never imported.",
+      "regression_locators": [
+        "apps/web/e2e/position-draft-isolation.spec.ts"
+      ],
+      "independent_retest": "Independent static review and a sequential Tenant A → Tenant B → Tenant A regression passed Chromium desktop/mobile, Firefox, and dark/reduced-motion tablet. The focused regression also passed pinned Playwright 1.62.1 WebKit in an isolated Linux container; only the same identity recovered its draft.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/position-draft-isolation.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "browser draft isolation",
+      "ledger_row_sha256": "779727c64ecfbc90ff34edb73f0e93b206863ce0c2dae5f3e946f19bb5336583"
+    },
+    "DEF-028": {
+      "owner": "hiring_domain",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/web/e2e/project-folder-handoff.spec.ts, apps/api/tests/test_folder_authorization.py and exercise the pre-fix condition recorded for DEF-028: Bulk project creation previously wrote only the legacy folder-name shadow while the dashboard discarded its global legacy key and filtered exclusively by `folder_id`, so created roles appeared ungrouped. Project creation now race-safely resolves or creates one case-insensitive tenant root folder, assigns its ID and canonical shadow name to every role, returns the ID, and redirects with a URL-scoped folder selection; legacy browser keys are removed.",
+      "regression_locators": [
+        "apps/web/e2e/project-folder-handoff.spec.ts",
+        "apps/api/tests/test_folder_authorization.py"
+      ],
+      "independent_retest": "Independent real-HTTP regression passed same-tenant case-folded reuse, cross-tenant separation, concurrent exact-once folder creation, and row consistency. The complete upload → review → create → folder redirect passed all four local browser projects with both role cards visible and no legacy localStorage state.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/project-folder-handoff.spec.ts",
+        "apps/api/tests/test_folder_authorization.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "bulk-project grouping",
+      "ledger_row_sha256": "00e92e81f5fcd3c4817b4fa15060bc5c208787f38de183ca5b9ddc90e812679a"
+    },
+    "DEF-029": {
+      "owner": "security_data",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_public_careers_api.py, apps/api/tests/test_migration_guards.py and exercise the pre-fix condition recorded for DEF-029: Legacy public intake stored applicant names and phone numbers in broadly projected `Candidate.source_ref`. Future intake now uses bounded canonical channels plus opaque references; migration `c85f2a6d1e43` deterministically sanitizes every existing `source='public'` row without treating the provenance field as contact storage.",
+      "regression_locators": [
+        "apps/api/tests/test_public_careers_api.py",
+        "apps/api/tests/test_migration_guards.py"
+      ],
+      "independent_retest": "Independent two-tenant migration drill proved all and only public refs changed, while candidate/contact/application counts and non-ref row hashes remained identical. Downgrade reconstructed no PII, re-upgrade was idempotent, and Alembic retained one head.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_public_careers_api.py",
+        "apps/api/tests/test_migration_guards.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "public applicant provenance",
+      "ledger_row_sha256": "2250cc17aa20b4292bf3b5f945a667e5db72c48cbe5ccb034a45cdd675c7d403"
+    },
+    "DEF-030": {
+      "owner": "security_data",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_authorization_policy.py, apps/api/tests/test_capability_access_logs.py and exercise the pre-fix condition recorded for DEF-030: A `candidates:read` API key could previously receive contact-bearing `source_ref` and identity fields without an explicit sensitive scope. The read projection is now minimal; `candidates:contact` is an explicit dependent scope, uses tenant/key-bound cursors, returns `no-store`, and finalizes sensitive-read audit without logging PII.",
+      "regression_locators": [
+        "apps/api/tests/test_authorization_policy.py",
+        "apps/api/tests/test_capability_access_logs.py"
+      ],
+      "independent_retest": "Independent isolated-DB canary regression plus source review proved read-only keys receive no name/email/phone/source-ref data, contact keys require read scope and are audited, and tenant/cursor boundaries fail closed.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_authorization_policy.py",
+        "apps/api/tests/test_capability_access_logs.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "API-key candidate fields",
+      "ledger_row_sha256": "76d5a2c1928e21997992652d48aaadbd592b2b10177c628766895688bc47cc9f"
+    },
+    "DEF-031": {
+      "owner": "runtime_integration",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "runtime_integration",
+      "reproduction": "Using the resolved 'runtime_integration' tenant/role/locale/device/environment context, execute apps/api/tests/test_workflow_authorization.py, apps/api/tests/test_workflow_hiring_manager_scope.py and exercise the pre-fix condition recorded for DEF-031: `workflows.manage` previously allowed rules to inspect scores or execute domain actions after the creator lost the underlying permissions. One shared requirements contract now gates definition/read/preview/process/control/replay surfaces and reauthorizes the active tenant-bound creator before and between durable actions; external effects remain idempotent and duplicate delivery actions are rejected.",
+      "regression_locators": [
+        "apps/api/tests/test_workflow_authorization.py",
+        "apps/api/tests/test_workflow_hiring_manager_scope.py"
+      ],
+      "independent_retest": "Independent isolated-DB workflow authorization suite passed. Review confirmed score, assessment, contact, communications, application, interview, and candidate permissions/fields are re-evaluated at HTTP and worker boundaries, including disable/revoke between actions.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_workflow_authorization.py",
+        "apps/api/tests/test_workflow_hiring_manager_scope.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "workflow privilege escalation",
+      "ledger_row_sha256": "228539892ea663fc862175806ffa96d724c99fd5e0ae1ae2927e1190198a9881"
+    },
+    "DEF-032": {
+      "owner": "security_data",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/web/e2e/ai-bff-privacy.spec.ts and exercise the pre-fix condition recorded for DEF-032: AI session message and attachment BFF routes previously inherited upstream caching/referrer/type headers and proxied upstream error bodies, which could retain or reflect private candidate context and upload tokens. Both routes now emit private `no-store`/`no-referrer`/`nosniff` responses, disable stream transformation/buffering, validate upstream media types, and return stable sanitized failures.",
+      "regression_locators": [
+        "apps/web/e2e/ai-bff-privacy.spec.ts"
+      ],
+      "independent_retest": "Independent disposable-build verification passed stream, attachment, and error cases; malicious public-cache/unsafe-referrer upstream headers were replaced, upstream prompt/secret canaries were absent, and the local desktop/mobile/Firefox/dark-reduced matrix passed.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/ai-bff-privacy.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "AI BFF privacy",
+      "ledger_row_sha256": "52e0a7a9302831eafd6502452823feacb114d54690db8ffe67115d9ee7366f7e"
+    },
+    "DEF-033": {
+      "owner": "security_data",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/web/e2e/auth-browser-boundaries.spec.ts and exercise the pre-fix condition recorded for DEF-033: A backend revocation failure could prevent browser logout, and concurrent rolling Auth.js responses could recreate an identity cookie after local clearing. Every current/global control now posts to an isolated same-origin navigation endpoint; revocation is bounded/best-effort, the response is static/no-script with browser-wide and explicit cookie clearing, ordinary requests decode the fixed identity read-only, and `/api/auth/session` cannot roll it.",
+      "regression_locators": [
+        "apps/web/e2e/auth-browser-boundaries.spec.ts"
+      ],
+      "independent_retest": "Independent exact-tree verification passed the multi-browser auth pack, strict actual-response CSP/referrer/cache headers, malformed method/origin/scope cases, prefix/chunk clearing, timeout behavior, concurrent RSC/session pressure, and 50/50 serial Firefox global-logout repetitions.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/auth-browser-boundaries.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "outage-safe logout",
+      "ledger_row_sha256": "742d56b036eb293c5a51ee249fc0332a4143c75f75382d59941fa213e650cb65"
+    },
+    "DEF-034": {
+      "owner": "security_data",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/web/e2e/auth-browser-boundaries.spec.ts, apps/api/tests/test_auth_sessions.py and exercise the pre-fix condition recorded for DEF-034: Completed refresh promises were retained for 120 seconds, so replaying the old encrypted browser cookie could receive the already-rotated replacement without contacting the backend. Refresh state now coalesces only genuinely concurrent calls and removes the keyed promise before it settles to callers.",
+      "regression_locators": [
+        "apps/web/e2e/auth-browser-boundaries.spec.ts",
+        "apps/api/tests/test_auth_sessions.py"
+      ],
+      "independent_retest": "Independent isolated-build verification and local Chromium regression proved two concurrent pages perform exactly one rotation, while reinstalling the old cookie performs a second backend request, receives replay rejection, clears the API session, and redirects to expired login.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/auth-browser-boundaries.spec.ts",
+        "apps/api/tests/test_auth_sessions.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "refresh-token replay",
+      "ledger_row_sha256": "9b384b8b48519135ffd50bf9f696b148e54240caf7572d9eda85d4d01ee28b99"
+    },
+    "DEF-035": {
+      "owner": "runtime_integration",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "runtime_integration",
+      "reproduction": "Using the resolved 'runtime_integration' tenant/role/locale/device/environment context, execute apps/api/tests/test_legacy_ai_boundary.py, apps/api/tests/test_operator_ai_scripts.py and exercise the pre-fix condition recorded for DEF-035: Two operator maintenance scripts selected a hardcoded organization and instantiated the configured model client directly, bypassing tenant routing, managed-processing opt-in, residency, budgets, and usage provenance. They now require an explicit tenant UUID, bind tenant context per unit of work, call only `organization_llm_client`, record bounded prompt versions/purpose, treat imported ads as masked untrusted data, validate extracted JSON strictly, and cap output tokens.",
+      "regression_locators": [
+        "apps/api/tests/test_legacy_ai_boundary.py",
+        "apps/api/tests/test_operator_ai_scripts.py"
+      ],
+      "independent_retest": "Independent repository-wide scan found no direct managed/private provider construction or raw client invocation outside the gateway/factory/provider implementation; script tenant/routing/logging/output bounds, compileall, one Alembic head, and the focused gateway boundary suite passed.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_legacy_ai_boundary.py",
+        "apps/api/tests/test_operator_ai_scripts.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "legacy AI gateway bypass",
+      "ledger_row_sha256": "1f77bb4b9bc7f8398e8a6bf19d21266b117e36250e2ca819b1b48d0011811dc0"
+    },
+    "DEF-036": {
+      "owner": "security_data",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_assignment_scope_registry.py, apps/api/tests/test_assessment_field_pair_authorization.py and exercise the pre-fix condition recorded for DEF-036: Assignment scope authorized candidate and position as independent sets for several legacy relationship records, allowing an A/X + B/Y interviewer to read crossed A/Y artifacts; body-array moves and some retarget paths also needed relationship-aware write checks. A centralized exact-Application-pair criterion, inherited parent rules, pair-stable writes, NULL-position fail-closed behavior, and assigned-role candidate-global child restrictions now cover the legacy graph.",
+      "regression_locators": [
+        "apps/api/tests/test_assignment_scope_registry.py",
+        "apps/api/tests/test_assessment_field_pair_authorization.py"
+      ],
+      "independent_retest": "Focused TaskSubmission list/detail/mutation/file/evaluation, position move, recording retarget, communication, activity, scheduling, workflow, talent, mission, score-all, and zero-mutation regressions are green. The exact final-tree suite passed 845 with 10 deliberate skips and 0 failures.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_assignment_scope_registry.py",
+        "apps/api/tests/test_assessment_field_pair_authorization.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "assignment relationship isolation",
+      "ledger_row_sha256": "034b74d03d82920070e476c0c2abac84aaad4a67b1a7e464834fb4e15bd69026"
+    },
+    "DEF-037": {
+      "owner": "security_data",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_folder_authorization.py and exercise the pre-fix condition recorded for DEF-037: Organization-scoped folder mutations allowed narrower assigned roles with a permission override to rename, reorder, archive, reparent, delete, or reassign shared folders containing unassigned positions. Folder operations now retain canonical candidate permissions and tenancy while enforcing a non-delegable admin/recruiter role boundary; multi-position move bodies are assignment-checked before mutation.",
+      "regression_locators": [
+        "apps/api/tests/test_folder_authorization.py"
+      ],
+      "independent_retest": "Owner verification passed 33 folder/authorization/security tests. Independent disposable-database folder/security/OpenAPI retest passed 23/23, including mixed assigned/unassigned content, permission revocation, API keys, cross-tenant IDs, and zero denied mutation.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_folder_authorization.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "shared folder authorization",
+      "ledger_row_sha256": "7a38e42d6340656b63b0a9f278447d9f0a2324bec2675a73c769a117a022adc8"
+    },
+    "DEF-038": {
+      "owner": "hiring_domain",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "hiring_domain",
+      "reproduction": "Using the resolved 'hiring_domain' tenant/role/locale/device/environment context, execute apps/api/tests/test_regional_sourcing.py, apps/api/tests/test_application_analytics_outcomes.py and exercise the pre-fix condition recorded for DEF-038: Public-source sanitization shortened canonical referral labels and hashed authenticated configured channels, while legacy sourcing analytics grouped application rows by candidate-level provenance. Canonical validated referral/configured slugs are now preserved, arbitrary public text remains opaque, and sourcing analytics groups first-class Application cycles.",
+      "regression_locators": [
+        "apps/api/tests/test_regional_sourcing.py",
+        "apps/api/tests/test_application_analytics_outcomes.py"
+      ],
+      "independent_retest": "Owner source/scheduling/communications and adjacent authorization packs are green. The exact final-tree suite passed 845 with 10 deliberate skips and 0 failures, including the multi-position, reapplication, referral-limit/merge, and source-quality reconciliation coverage.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_regional_sourcing.py",
+        "apps/api/tests/test_application_analytics_outcomes.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "source provenance and analytics",
+      "ledger_row_sha256": "1b68c952d25cbba2aa5e9fb2519861ecf8802712911c83081d7c5c228c665e12"
+    },
+    "DEF-039": {
+      "owner": "hiring_domain",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "hiring_domain",
+      "reproduction": "Using the resolved 'hiring_domain' tenant/role/locale/device/environment context, execute apps/api/tests/test_application_cycle_schema_integrity.py, apps/api/tests/test_application_cycles_evaluations.py and exercise the pre-fix condition recorded for DEF-039: Ten legacy artifacts carried only candidate/position pairs, so repeated applications could not be distinguished and several repeated parent IDs lacked database-level consistency. Authoritative Application links, deterministic backfill, exact deferred edges, cycle-safe writes/replay/merge/erasure, and an explicit complete scope registry are implemented.",
+      "regression_locators": [
+        "apps/api/tests/test_application_cycle_schema_integrity.py",
+        "apps/api/tests/test_application_cycles_evaluations.py"
+      ],
+      "independent_retest": "Migration `e18c4f6a0b32` round-trip/check, direct-SQL mismatch, two-cycle authorization, forced-RLS, preserved-data, and the exact final-tree 845-pass suite are green; 10 deliberate tests skipped and none failed.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_application_cycle_schema_integrity.py",
+        "apps/api/tests/test_application_cycles_evaluations.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "application-cycle relationship integrity",
+      "ledger_row_sha256": "9fa0f85dc7434005acc57391016d35bdb6033fa95994bf837b58fd21c734d2f6"
+    },
+    "DEF-040": {
+      "owner": "security_data",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_privacy_erasure_graph.py, apps/api/tests/test_ai_candidate_source_erasure.py and exercise the pre-fix condition recorded for DEF-040: Candidate erasure could miss free-chat, saved-view, unbound AI, workflow, import/batch, message/template, offer/approval, activity/tag/task, and private-object metadata copies; untyped substring markers could also over-delete unrelated data. The inventory now traverses those roots and promotes only boundary-safe canonical identifiers.",
+      "regression_locators": [
+        "apps/api/tests/test_privacy_erasure_graph.py",
+        "apps/api/tests/test_ai_candidate_source_erasure.py"
+      ],
+      "independent_retest": "Independent adjacent privacy/merge/object-worker coverage passes 15/15. An exact database probe removed canonical email/phone/UUID, a conservative opaque canary, and exact full-document roots while preserving common name/role, neighboring email/UUID, third-party referee data, unrelated same-tenant data, and identical other-tenant canaries; derived offer snapshots were fixed-tombstoned without altering approval evidence.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_privacy_erasure_graph.py",
+        "apps/api/tests/test_ai_candidate_source_erasure.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "derived privacy graph and marker safety",
+      "ledger_row_sha256": "02be867b15139c378cfdf32dc2a745052e942e40ff94606cb94a00e5a1a2d1f0"
+    },
+    "DEF-041": {
+      "owner": "security_data",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_migration_guards.py, apps/api/tests/test_problem_contract.py, apps/api/tests/test_forced_rls_database.py and exercise the pre-fix condition recorded for DEF-041: A concurrent same-tenant write could recreate personal data after retention inventory began. Migration `e18c4f6a0b32` gives erasure an exclusive tenant advisory lock and every tenant-table row write a shared fail-fast lock, with a stable sanitized 409 problem response and `Retry-After`.",
+      "regression_locators": [
+        "apps/api/tests/test_migration_guards.py",
+        "apps/api/tests/test_problem_contract.py",
+        "apps/api/tests/test_forced_rls_database.py"
+      ],
+      "independent_retest": "The schema registry covers 112/112 tenant tables. Independent migration round-trip/check, deterministic shared-to-exclusive serialization, same-tenant 55P03/no-mutation, adjacent-tenant/reentrant/post-release writes, five problem-contract cases, and nine forced-RLS tests pass.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_migration_guards.py",
+        "apps/api/tests/test_problem_contract.py",
+        "apps/api/tests/test_forced_rls_database.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "erasure/write serialization",
+      "ledger_row_sha256": "ff4710c682f67c1a46f017c576bbf4e122c9e3593d4b199a4c6189746d08dc54"
+    },
+    "DEF-042": {
+      "owner": "frontend_ux",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/web/e2e/ui-recovery-states.spec.ts, apps/web/e2e/public-accessibility.spec.ts and exercise the pre-fix condition recorded for DEF-042: OAuth callback errors, failed scorecard loads, disabled assignment actions, legacy unavailable delivery states, and an unsupported legacy `.doc` upload claim could expose raw codes, look empty, or present unclear/false controls. They now use localized actionable failures, explicit disabled reasons, accurate unavailable/read-only state, correctly associated descriptions, and a shared cross-language file-suffix contract.",
+      "regression_locators": [
+        "apps/web/e2e/ui-recovery-states.spec.ts",
+        "apps/web/e2e/public-accessibility.spec.ts"
+      ],
+      "independent_retest": "Independent focused recovery verification passed 12/12 plus 8/8 adjacent tests. Generated contract coverage passed 30/30; the pre-final-hardening four-project web baseline passed 107 tests with 9 intentional skips, with clean typecheck and production build. Exact final-tree web verification remains under DEF-055.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/ui-recovery-states.spec.ts",
+        "apps/web/e2e/public-accessibility.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "truthful UI recovery and accessibility",
+      "ledger_row_sha256": "7b14cf5f67f0f2e1d130d010a0b6f2d1be6fd8b90c1de4b96b526ed83ee9c4cd"
+    },
+    "DEF-043": {
+      "owner": "security_data",
+      "fix_commit": "cbcec4c6480d5c54088e409d4c40e22e02bad9d7",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_document_inventory.py, apps/api/tests/test_pdf_upload_validation.py, apps/api/tests/test_task_file_storage.py and exercise the pre-fix condition recorded for DEF-043: Attachment intake and retention did not share a complete inventory of accepted document surfaces. One bounded validator now inventories allowed XLSX/DOCX/PDF content, enforces canonical ZIP/PDF structure, rejects non-inventoried embedded/interactive/unreachable/trailing/package/xref surfaces with sanitized 422 and zero residue, revalidates legacy objects with atomic fail-closed 409, and rechecks size/SHA after parsing. Safe EN/RU documents remain supported.",
+      "regression_locators": [
+        "apps/api/tests/test_document_inventory.py",
+        "apps/api/tests/test_pdf_upload_validation.py",
+        "apps/api/tests/test_task_file_storage.py"
+      ],
+      "independent_retest": "Independent final matrix passes 133/133 at `e18c4f6a0b32`, plus 33/33 direct probes across ZIP parsing, real no-orphan uploads, size/SHA/TOCTOU, legacy PDF atomic-stop, and safe EN/RU documents. Exact-500, lexical XML, Word fields/controls, Unicode PDF font/CMap/CID/TTF graphs, interactive/unreachable PDF, TXT/CSV/import, and erasure canaries are green; the transient fail-closed error-precedence mismatch was fixed and independently retested 26/26 before the final matrix.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_document_inventory.py",
+        "apps/api/tests/test_pdf_upload_validation.py",
+        "apps/api/tests/test_task_file_storage.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "document attachment privacy inventory",
+      "ledger_row_sha256": "85399bce2574b16d77d3badbc208fa4132c457019b9d2c595ecc5ec46e2c4764"
+    },
+    "DEF-044": {
+      "owner": "security_data",
+      "fix_commit": "93943d0d54a8ca4054d12529007585abb481cf7d",
+      "context": "preserved_data",
+      "reproduction": "Using the resolved 'preserved_data' tenant/role/locale/device/environment context, execute apps/web/e2e/auth-browser-boundaries.spec.ts, apps/web/e2e/public-accessibility.spec.ts and exercise the pre-fix condition recorded for DEF-044: The hardened web identity boundary incorrectly required RFC version/variant bits in organization UUIDs, while PostgreSQL and the existing pilot tenant validly use the canonical legacy identifier `00000000-0000-0000-0000-000000000001`. API login succeeded but the proxy rejected that tenant claim, preventing the preserved workspace from loading. The boundary now accepts any canonical database UUID while retaining exact Auth.js/API-session identity matching and fail-closed decoding.",
+      "regression_locators": [
+        "apps/web/e2e/auth-browser-boundaries.spec.ts",
+        "apps/web/e2e/public-accessibility.spec.ts"
+      ],
+      "independent_retest": "The migrated preview signs in and renders 82 active candidates and 105 positions in EN/RU. A fixture using the exact legacy identifier passes the production HTTPS login → protected-candidates regression in all four local browser profiles (4/4); contracts, typecheck, and production build are clean.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/auth-browser-boundaries.spec.ts",
+        "apps/web/e2e/public-accessibility.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "preserved tenant authentication",
+      "ledger_row_sha256": "9bffbe31ffc7c8dbafd0ef46bd7b3500484185d62ed91fc447a5574879e0dfd3"
+    },
+    "DEF-045": {
+      "owner": "frontend_ux",
+      "fix_commit": "93943d0d54a8ca4054d12529007585abb481cf7d",
+      "context": "preserved_data",
+      "reproduction": "Using the resolved 'preserved_data' tenant/role/locale/device/environment context, execute apps/web/e2e/public-accessibility.spec.ts and exercise the pre-fix condition recorded for DEF-045: Six sidebar entries selected copy from the user's stored profile locale instead of the active interface locale, so switching the UI to Russian could leave those entries in English. Navigation now reads every entry from the active message catalog.",
+      "regression_locators": [
+        "apps/web/e2e/public-accessibility.spec.ts"
+      ],
+      "independent_retest": "The RU navigation contract passes 6/6, and an independent production-preview retest renders all six labels in Russian while preserving the 82 active candidates and 105 positions. The pre-final-hardening four-project web baseline passed 107 tests with 9 intentional skips; exact final-tree web verification remains under DEF-055.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/public-accessibility.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 3,
+      "status": "closed",
+      "area": "RU navigation locale",
+      "ledger_row_sha256": "41d4eff10163524686297404aa8c9a53f77b08d4e0508c7cb32ba57c7d56d683"
+    },
+    "DEF-046": {
+      "owner": "hiring_domain",
+      "fix_commit": "93943d0d54a8ca4054d12529007585abb481cf7d",
+      "context": "hiring_domain",
+      "reproduction": "Using the resolved 'hiring_domain' tenant/role/locale/device/environment context, execute apps/api/tests/test_pilot_response_contracts.py, apps/api/tests/test_authorization_policy.py and exercise the pre-fix condition recorded for DEF-046: Sanitizing public `source_ref` values correctly removed contact data but caused public applicants to appear in the hiring pipeline under an opaque provenance identifier. The ranked-candidate contract now carries a nullable, server-derived `display_name` only when contact-field policy allows it; authorized legacy fallback is bounded and restricted callers receive `null`. Table, Kanban, and comparison views prefer that policy-gated value without restoring PII to provenance.",
+      "regression_locators": [
+        "apps/api/tests/test_pilot_response_contracts.py",
+        "apps/api/tests/test_authorization_policy.py"
+      ],
+      "independent_retest": "Three E18 database-targeted authorization/projection regressions pass, including restricted-field behavior; generated contracts and the all-view label regression pass 30/30, and typecheck plus production build are clean. The exact Linux WebKit real-stack journey remains enforced by the release CI gate.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_pilot_response_contracts.py",
+        "apps/api/tests/test_authorization_policy.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "pipeline applicant identity",
+      "ledger_row_sha256": "c373bdfcfa11060a965b969b83aede7d9563d956abcaba297edb8632fa28b44a"
+    },
+    "DEF-047": {
+      "owner": "integration_lead",
+      "fix_commit": "93943d0d54a8ca4054d12529007585abb481cf7d",
+      "context": "operations",
+      "reproduction": "Using the resolved 'operations' tenant/role/locale/device/environment context, execute .github/workflows/ci.yml, apps/api/tests/test_malware_scanner_contract.py and exercise the pre-fix condition recorded for DEF-047: The pinned ClamAV engine started with stale embedded bootstrap signatures, while nondeterministic background refresh could leave the API suite failing its intentional 48-hour fail-closed readiness check. CI now disables background refresh, runs `freshclam` deterministically, and waits for the live `VERSION` response to prove signatures are within the freshness bound before starting tests.",
+      "regression_locators": [
+        ".github/workflows/ci.yml",
+        "apps/api/tests/test_malware_scanner_contract.py"
+      ],
+      "independent_retest": "The exact pinned image updated from the stale bootstrap database and reloaded it successfully; the live scanner-readiness contract passes 1/1 locally. Product fail-closed behavior is unchanged, and exact-revision CI remains the release gate.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        ".github/workflows/ci.yml",
+        "apps/api/tests/test_malware_scanner_contract.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 3,
+      "status": "closed",
+      "area": "CI malware freshness",
+      "ledger_row_sha256": "f333285154d52a5eaed6b5b8f0eb462c983cd54a4d8f0f3a84b5fdde7055eae7"
+    },
+    "DEF-048": {
+      "owner": "frontend_ux",
+      "fix_commit": "93943d0d54a8ca4054d12529007585abb481cf7d",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/web/e2e/ui-recovery-states.spec.ts, apps/web/e2e/public-accessibility.spec.ts and exercise the pre-fix condition recorded for DEF-048: Global recovery/settings/public-flow selectors could match both the active UI and Next.js's transient hidden streamed Suspense staging tree, producing strict-locator failures without duplicate product content. Assertions are now scoped to `#main-content` or the selected semantic tabpanel and continue to fail on real duplicates inside the active surface.",
+      "regression_locators": [
+        "apps/web/e2e/ui-recovery-states.spec.ts",
+        "apps/web/e2e/public-accessibility.spec.ts"
+      ],
+      "independent_retest": "Exact failing traces contain one fixture record and one final accessible element. The scoped locators passed 40/40 repeated desktop/mobile stress checks, and the pre-final-hardening isolated desktop/mobile Chromium, Firefox, and dark/reduced-motion matrix passed 107 tests with 9 intentional skips. Exact final-tree execution remains under DEF-055.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/ui-recovery-states.spec.ts",
+        "apps/web/e2e/public-accessibility.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 3,
+      "status": "closed",
+      "area": "browser test harness",
+      "ledger_row_sha256": "fa36c0bce4d2961db9abc339592552f5a1a82a450b2aa6a82388eeb326f9c656"
+    },
+    "DEF-049": {
+      "owner": "frontend_ux",
+      "fix_commit": "93943d0d54a8ca4054d12529007585abb481cf7d",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/api/tests/test_candidate_upload_limits.py, apps/web/e2e/public-accessibility.spec.ts and exercise the pre-fix condition recorded for DEF-049: Candidate-upload helper copy advertised inconsistent 20 MB and 10 MB limits while the centralized pilot entitlement correctly enforces 15 MiB. EN/RU product copy and integration guidance now state the same 15 MiB boundary, with larger or invalid uploads still rejected server-side.",
+      "regression_locators": [
+        "apps/api/tests/test_candidate_upload_limits.py",
+        "apps/web/e2e/public-accessibility.spec.ts"
+      ],
+      "independent_retest": "The upload-limit contract locks both language catalogs to the centralized 15 MiB entitlement; generated API contracts, typecheck, and production build remain clean, and adjacent upload rejection behavior is unchanged.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_candidate_upload_limits.py",
+        "apps/web/e2e/public-accessibility.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 3,
+      "status": "closed",
+      "area": "upload-limit copy",
+      "ledger_row_sha256": "8096954cd4f6429283cd660c8c67ada27c64d384069d62684aec217000f5e3fa"
+    },
+    "DEF-050": {
+      "owner": "security_data",
+      "fix_commit": "72091a33591c434bd911605f9682823a2005382d",
+      "context": "preserved_data",
+      "reproduction": "Using the resolved 'preserved_data' tenant/role/locale/device/environment context, execute apps/api/tests/test_migrate_legacy_private_objects.py, docs/evidence/preserved-data-legacy-cutover-e18-2026-08-24.json and exercise the pre-fix condition recorded for DEF-050: Pre-registry files lacked a release-grade path into canonical private storage. The operator command defaults to dry-run; globally preflights normalized ownership under a candidate-writer fence; streams bounded batches; validates, freshly scans, and digest-checks every source; atomically binds resource/registry/usage/deletion state; cleans uncommitted promotions; and reports opaque orphans without deleting source bytes.",
+      "regression_locators": [
+        "apps/api/tests/test_migrate_legacy_private_objects.py",
+        "docs/evidence/preserved-data-legacy-cutover-e18-2026-08-24.json"
+      ],
+      "independent_retest": "The protected 2026-08-24 run validated and migrated 62/62 references with zero failures, reconciled 62 ready bindings and zero quarantine/unregistered references, passed authorized no-store download plus sensitive-read audit, verified the post-cutover encrypted backup/restore, drained 62/62 digest-bound redundant sources without retry/DLQ/tombstone, and preserved all business counts plus projection SHA. The final dry run reports only seven opaque unreferenced files (two CV, five assessment), which were neither adopted nor deleted. Focused/adjacent verification passed 37 with one environment-gated skip and an independent review reported no material finding.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_migrate_legacy_private_objects.py",
+        "docs/evidence/preserved-data-legacy-cutover-e18-2026-08-24.json",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "legacy private-file cutover",
+      "ledger_row_sha256": "c85b24beb74b00ac51b25da552172a5a77c48bdce66662b24be9bd8851d82a4a"
+    },
+    "DEF-051": {
+      "owner": "security_data",
+      "fix_commit": "72091a33591c434bd911605f9682823a2005382d",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_pdf_upload_validation.py, apps/api/tests/test_document_inventory.py and exercise the pre-fix condition recorded for DEF-051: Whole-file marker matching rejected safe historical CVs when compressed font/image bytes happened to contain action-like tokens. Validation now proves revision/EOF/xref boundaries and walks the reachable parsed object graph: safe explicit destinations and user-initiated links remain usable, while executable, mutating, automatic, unknown, embedded, interactive, unsafe-URI, appended-payload, and malformed-revision surfaces fail closed.",
+      "regression_locators": [
+        "apps/api/tests/test_pdf_upload_validation.py",
+        "apps/api/tests/test_document_inventory.py"
+      ],
+      "independent_retest": "Independent focused verification passed 22 semantic PDF cases; adjacent storage/AI coverage passed 66 with one environment-gated MinIO skip, document-inventory coverage passed 26, all 49 preserved PDFs validate, and the exact final-tree integrated API suite passed.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_pdf_upload_validation.py",
+        "apps/api/tests/test_document_inventory.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "semantic PDF compatibility/safety",
+      "ledger_row_sha256": "897ed73139ef4b526e950e228451358aa8b500ac06732ffcfbd22781d61ec215"
+    },
+    "DEF-052": {
+      "owner": "security_data",
+      "fix_commit": "72091a33591c434bd911605f9682823a2005382d",
+      "context": "preserved_data",
+      "reproduction": "Using the resolved 'preserved_data' tenant/role/locale/device/environment context, execute apps/api/tests/test_legacy_private_object_worker.py and exercise the pre-fix condition recorded for DEF-052: The legacy worker previously had a check-then-delete interval in which an attacker or concurrent writer could replace the verified path before unlink. Local settlement now atomically renames only the exact directory entry to an outbox-ID tombstone, opens without following links, rechecks inode/size/timestamps/SHA-256, deletes only the claim, and restores or quarantines safely on mismatch.",
+      "regression_locators": [
+        "apps/api/tests/test_legacy_private_object_worker.py"
+      ],
+      "independent_retest": "Nine focused worker regressions pass, including concurrent replacement, late symlink swap, simulated crash tombstone, lost acknowledgement, changed bytes, concurrent workers, rollback, missing mount, and path/resource rejection. Adjacent cutover/retention matrices passed, and the protected worker drained 62/62 digest-matched sources with zero retry, dead letter, failure, or tombstone.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_legacy_private_object_worker.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "atomic legacy deletion",
+      "ledger_row_sha256": "59fdb38e585a483cfe457e9d62c4d60a04e68a97335eb68a6a3ccba471a66deb"
+    },
+    "DEF-053": {
+      "owner": "security_data",
+      "fix_commit": "72091a33591c434bd911605f9682823a2005382d",
+      "context": "preserved_data",
+      "reproduction": "Using the resolved 'preserved_data' tenant/role/locale/device/environment context, execute apps/api/tests/test_retention_private_objects.py, apps/api/tests/test_private_object_worker.py and exercise the pre-fix condition recorded for DEF-053: Candidate erasure could strand an exhausted cutover `replacement` row and already-`deleted` registry tombstones retained candidate/child resource IDs and descriptive scanner metadata. Retention now revalidates outstanding sources without digest rebinding, adopts/accelerates and reactivates replacement obligations, and scrubs subject linkage/metadata across all registry lifecycle states while limiting hold/delete decisions to live states.",
+      "regression_locators": [
+        "apps/api/tests/test_retention_private_objects.py",
+        "apps/api/tests/test_private_object_worker.py"
+      ],
+      "independent_retest": "Independent isolated-database and adjacent privacy/object-worker verification passed 114 with one environment-gated skip. It covers changed-source atomic rollback and successful retry, dead-letter reset, source drain, live derived objects, and already-deleted candidate-linked tombstones; the preserved-data drain completed 62/62 with zero retry, dead-letter, failure, or tombstone. Independent review reported no material finding.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_retention_private_objects.py",
+        "apps/api/tests/test_private_object_worker.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "retention/private-object tombstones",
+      "ledger_row_sha256": "3fc6e87065f1ae3a10c334c395c51b275a91ce8397be989fda73e0c52633c5f2"
+    },
+    "DEF-054": {
+      "owner": "hiring_domain",
+      "fix_commit": "72091a33591c434bd911605f9682823a2005382d",
+      "context": "preserved_data",
+      "reproduction": "Using the resolved 'preserved_data' tenant/role/locale/device/environment context, execute apps/api/tests/test_candidate_merge_private_objects.py and exercise the pre-fix condition recorded for DEF-054: Merge copied legacy CV path text without transferring registered-object ownership, so the primary/alias rows and `PrivateObject.resource_id` could diverge and reversal omitted registry state. Merge now moves one binding, clears repeated legacy aliases, preserves exact ownership for distinct documents, includes registry rows in encrypted snapshots, restores them on reversal, and takes the cutover write fence. Invalid tenant/category/path/resource graphs fail closed.",
+      "regression_locators": [
+        "apps/api/tests/test_candidate_merge_private_objects.py"
+      ],
+      "independent_retest": "Ten focused cases pass for registered/legacy moves, repeated and distinct documents, exact reversal, transitional repair, cross-tenant and key/path mismatch, unregistered private-shaped paths, and post-merge corruption. Adjacent privacy/cutover verification and independent source review found no material defect; the final exact-revision full suite remains a release/CI gate under DEF-055 rather than an open merge defect.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_candidate_merge_private_objects.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "candidate merge private objects",
+      "ledger_row_sha256": "e53c7a9ae9e68eec666bf5069a38acf1e7bdd70ee55a990f86e39e4811d674c7"
+    },
+    "DEF-055": {
+      "owner": "integration_lead",
+      "fix_commit": "72091a33591c434bd911605f9682823a2005382d",
+      "context": "operations",
+      "reproduction": "Using the resolved 'operations' tenant/role/locale/device/environment context, execute .github/workflows/ci.yml and exercise the pre-fix condition recorded for DEF-055: The exhaustive API job was previously canceled at 68% by its 35-minute hosted-runner timeout even though no test failure had occurred. Its bounded budget is now 75 minutes, and the exact local tree completes in 1,297.39 seconds: 855 collected, 845 passed, 10 deliberate skips, 0 failed with live Valkey/MinIO/ClamAV.",
+      "regression_locators": [
+        ".github/workflows/ci.yml"
+      ],
+      "independent_retest": "Close this CI-only gate when the corrected pushed revision completes the whole hosted API/web/recovery suite and Linux WebKit/image/SBOM/signing siblings green within their bounds.",
+      "adjacent_flow_result": "pending_hosted",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        ".github/workflows/ci.yml",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 3,
+      "status": "verification",
+      "area": "exact-revision hosted gate",
+      "ledger_row_sha256": "a2d50d507aad9d2470e4cfd3c0fe09cd3e309e5ffc3d8b2a32c5090c9e521abf"
+    },
+    "DEF-056": {
+      "owner": "security_data",
+      "fix_commit": "72091a33591c434bd911605f9682823a2005382d",
+      "context": "api_security",
+      "reproduction": "Using the resolved 'api_security' tenant/role/locale/device/environment context, execute apps/api/tests/test_audit_connection_reliability.py and exercise the pre-fix condition recorded for DEF-056: Sensitive audit uses a reserved bounded database pool/session with explicit application-lifecycle disposal, so route-held connections cannot starve audit persistence. Missing or disabled mutation actors fail before the endpoint; disable/delete races after a sensitive response body is produced return sanitized `audit_unavailable` and withhold that body rather than release an unaudited success.",
+      "regression_locators": [
+        "apps/api/tests/test_audit_connection_reliability.py"
+      ],
+      "independent_retest": "Independent one-slot route/audit isolation, 20-request fanout, actor re-enable mutation, and actor disable/delete sensitive-read race regressions pass. Denied mutations leave no write, and every released sensitive success has its request-bound audit record.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_audit_connection_reliability.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "audit durability and actor races",
+      "ledger_row_sha256": "ebd7a9a47bd59b16ea6de331b3605313016d06b63454cbd5ca955230e6b50c8e"
+    },
+    "DEF-057": {
+      "owner": "security_data",
+      "fix_commit": "72091a33591c434bd911605f9682823a2005382d",
+      "context": "preserved_data",
+      "reproduction": "Using the resolved 'preserved_data' tenant/role/locale/device/environment context, execute apps/api/tests/test_legacy_private_object_worker.py, apps/api/tests/test_private_object_storage.py and exercise the pre-fix condition recorded for DEF-057: Legacy reads/deletes distinguish a missing, detached, or replaced configured volume from an absent object under an intact mount. Intake and cutover promotion/registration use cancellation-safe acknowledgement and cleanup: cancellation propagates only after the outcome is either a verified committed binding or zero final/quarantine residue.",
+      "regression_locators": [
+        "apps/api/tests/test_legacy_private_object_worker.py",
+        "apps/api/tests/test_private_object_storage.py"
+      ],
+      "independent_retest": "Detach-empty-root then reattach worker/retention regressions and promotion, post-promotion validation, registration, uncertain-commit, and external-cancellation cases pass. Focused verification passed 10/10; the adjacent private-storage/worker/retention/cutover matrix passed 51 with two environment-gated skips.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_legacy_private_object_worker.py",
+        "apps/api/tests/test_private_object_storage.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "legacy mount and cancellation durability",
+      "ledger_row_sha256": "f287736a2f1fdce166a71116ee7e44b41815dfd3513090d86e57086e463b7a9f"
+    },
+    "DEF-058": {
+      "owner": "hiring_domain",
+      "fix_commit": "72091a33591c434bd911605f9682823a2005382d",
+      "context": "hiring_domain",
+      "reproduction": "Using the resolved 'hiring_domain' tenant/role/locale/device/environment context, execute apps/api/tests/test_candidate_merge_private_objects.py, apps/api/tests/test_candidate_alias_resolution.py and exercise the pre-fix condition recorded for DEF-058: The canonical merge-chain guard now evaluates the tenant-wide merge graph independently of assignment-filtered candidate visibility. An assigned user cannot hide an unassigned descendant and construct a second merge that breaks the one-canonical-owner invariant.",
+      "regression_locators": [
+        "apps/api/tests/test_candidate_merge_private_objects.py",
+        "apps/api/tests/test_candidate_alias_resolution.py"
+      ],
+      "independent_retest": "The assignment-hidden descendant regression returns the stable 409 with zero mutation: the original batch/link graph and both current candidates remain unchanged. Focused and adjacent merge/private-object verification pass.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_candidate_merge_private_objects.py",
+        "apps/api/tests/test_candidate_alias_resolution.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "merge descendant authorization",
+      "ledger_row_sha256": "115f0cf9373303e73256f651e9b685b0375748d02eb4dd282c34eebfbc709226"
+    },
+    "DEF-059": {
+      "owner": "runtime_integration",
+      "fix_commit": "72091a33591c434bd911605f9682823a2005382d",
+      "context": "runtime_integration",
+      "reproduction": "Using the resolved 'runtime_integration' tenant/role/locale/device/environment context, execute apps/api/tests/test_private_llm_transport.py, apps/api/tests/test_media_upload_validation.py, apps/api/tests/test_pdf_upload_validation.py and exercise the pre-fix condition recorded for DEF-059: Allowlisted private-model DNS resolution failures are classified as transient and retried without a provider call or leaked resolver detail; resolved unsafe/private-network targets remain terminal. OGG, WebM, and MP3 uploads now require bounded structural parsing and reject header-only, malformed, truncated, parser-limit, and appended executable/archive/HTML polyglot payloads while preserving valid minimal media.",
+      "regression_locators": [
+        "apps/api/tests/test_private_llm_transport.py",
+        "apps/api/tests/test_media_upload_validation.py",
+        "apps/api/tests/test_pdf_upload_validation.py"
+      ],
+      "independent_retest": "A fail-then-recover DNS regression succeeds on attempt two with zero first-attempt provider calls and no PII canary in failure state/logs. The 28-case recording validator matrix and adjacent private-transport/upload safety checks pass.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_private_llm_transport.py",
+        "apps/api/tests/test_media_upload_validation.py",
+        "apps/api/tests/test_pdf_upload_validation.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "AI DNS retry and media validation",
+      "ledger_row_sha256": "d2d0e643e915091d7d11a3f563d918b1e53422d4a686b5328acdcc03517b4b90"
+    },
+    "DEF-060": {
+      "owner": "runtime_integration",
+      "fix_commit": "72091a33591c434bd911605f9682823a2005382d",
+      "context": "runtime_integration",
+      "reproduction": "Using the resolved 'runtime_integration' tenant/role/locale/device/environment context, execute apps/api/tests/test_communications.py, apps/web/e2e/ui-recovery-states.spec.ts and exercise the pre-fix condition recorded for DEF-060: Communication-account listing now requires `communications.read` and always returns a redacted configuration, including for legacy rows and callers with credential overrides. The UI separately gates message history, sending, and candidate-contact editing so communications access never implies contact mutation and contact write never implies message access.",
+      "regression_locators": [
+        "apps/api/tests/test_communications.py",
+        "apps/web/e2e/ui-recovery-states.spec.ts"
+      ],
+      "independent_retest": "Policy-contract and legacy-secret-canary regressions pass with an empty account configuration and no credential leakage. Permission-driven UI checks confirm read/send/contact controls follow their distinct API actions and fields.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_communications.py",
+        "apps/web/e2e/ui-recovery-states.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "communications projection and UI authorization",
+      "ledger_row_sha256": "e7a635cd0fec09ad2aeb99561951631178dbd99e098126abc47444d4e351263e"
+    },
+    "DEF-061": {
+      "owner": "runtime_integration",
+      "fix_commit": "72091a33591c434bd911605f9682823a2005382d",
+      "context": "runtime_integration",
+      "reproduction": "Using the resolved 'runtime_integration' tenant/role/locale/device/environment context, execute apps/api/tests/test_enterprise.py, apps/api/tests/test_authorization_policy.py, apps/web/e2e/ui-recovery-states.spec.ts and exercise the pre-fix condition recorded for DEF-061: Provider-free tenant AI readiness now evaluates managed opt-in, private allowlisting/configuration, credential presence, and zero/hard budgets without DNS or provider I/O. Chat capability remains context-scoped, while a separate rescore-capability endpoint exactly mirrors the rescore mutation's action, field, and assignment contract.",
+      "regression_locators": [
+        "apps/api/tests/test_enterprise.py",
+        "apps/api/tests/test_authorization_policy.py",
+        "apps/web/e2e/ui-recovery-states.spec.ts"
+      ],
+      "independent_retest": "Three readiness regressions cover managed, private, and zero-budget states; the rescore policy-parity regression and two scoped/unavailable browser recovery cases pass. Scoped chat denial can hide chat while independently authorized rescore remains available; tenant-unavailable AI hides both.",
+      "adjacent_flow_result": "passed",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/api/tests/test_enterprise.py",
+        "apps/api/tests/test_authorization_policy.py",
+        "apps/web/e2e/ui-recovery-states.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "closed",
+      "area": "tenant AI readiness and rescore authorization",
+      "ledger_row_sha256": "7f9472a5cdfcc08bf4399fd7f2e9ca3cb41a9412aa85d7988351d867cc96cfde"
+    },
+    "DEF-062": {
+      "owner": "frontend_ux",
+      "fix_commit": "03ce249a61543a934a63d56cfd4ea64087e86c9f",
+      "context": "web_matrix",
+      "reproduction": "Using the resolved 'web_matrix' tenant/role/locale/device/environment context, execute apps/web/e2e/public-accessibility.spec.ts, apps/web/e2e/position-draft-isolation.spec.ts and exercise the pre-fix condition recorded for DEF-062: Staggered `.reveal` opacity blended otherwise compliant criterion text into its card background during entrance, producing serious axe contrast failures; WebKit could also race a protected-page auth redirect against the test fixture's explicit login navigation after cookie clearing. Reveal now retains full foreground contrast while translating, criterion labels use the full foreground token, and identity switching leaves the application document before clearing cookies. Frontend/UX owner; reproduction is the read-only interviewer and cross-identity draft-isolation flows in the mocked browser matrix.",
+      "regression_locators": [
+        "apps/web/e2e/public-accessibility.spec.ts",
+        "apps/web/e2e/position-draft-isolation.spec.ts"
+      ],
+      "independent_retest": "The two original Chromium contrast failures reproduce on the pre-fix build. Post-fix focused desktop/mobile/Firefox/dark-reduced coverage passes 8/8, and the rebuilt exact-current four-project adjacent suite collected 124 with 115 passed, 9 intentional project-scope skips, and 0 failed. Close only after the corrected exact-revision mocked Linux WebKit run passes under DEF-055.",
+      "adjacent_flow_result": "pending_hosted",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        "apps/web/e2e/public-accessibility.spec.ts",
+        "apps/web/e2e/position-draft-isolation.spec.ts",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 2,
+      "status": "verification",
+      "area": "transient contrast and WebKit identity switch",
+      "ledger_row_sha256": "fe6aad9fbca36d3d84340e6991dbcf68b4edae68daced5c0683339a09537956f"
+    },
+    "DEF-063": {
+      "owner": "integration_lead",
+      "fix_commit": "363f14441c9349dfeaa8c32e936975a5cbccff33",
+      "context": "operations",
+      "reproduction": "Using the resolved 'operations' tenant/role/locale/device/environment context, execute .github/workflows/ci.yml, ops/release/validate_defect_closure_index.py, ops/release/test_validate_defect_closure_index.py and exercise the pre-fix condition recorded for DEF-063: The defect-traceability validator checks historical implementation commits, but the API job used checkout's default single-commit depth, so the new preflight failed before product tests. The API checkout now fetches complete history while other jobs retain minimal scope.",
+      "regression_locators": [
+        ".github/workflows/ci.yml",
+        "ops/release/validate_defect_closure_index.py",
+        "ops/release/test_validate_defect_closure_index.py"
+      ],
+      "independent_retest": "The shallow hosted failure is preserved in run 32727908172/job 97433262766; local full-history evidence validation passes 13/13. Close only when the corrected exact revision passes the preflight and downstream hosted gates under DEF-055.",
+      "adjacent_flow_result": "pending_hosted",
+      "evidence_paths": [
+        "docs/DEFECT_LEDGER.md",
+        "docs/ACCEPTANCE_TEST_PLAN.md",
+        ".github/workflows/ci.yml",
+        "ops/release/validate_defect_closure_index.py",
+        "ops/release/test_validate_defect_closure_index.py",
+        "docs/PILOT_COMPLETION_REPORT_2026-08-24.md"
+      ],
+      "severity": 3,
+      "status": "verification",
+      "area": "CI evidence-history checkout",
+      "ledger_row_sha256": "5db8ebc3a4d3000c2496dd685abdf60e9f36be5e894ead5cd9371c249e6173bb"
+    }
+  }
+}

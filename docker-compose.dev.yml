@@ -1,0 +1,214 @@
+name: hr-agent-pilot-dev
+
+# Full local reference topology. It deliberately uses development-mode HTTP
+# between containers; production supplies TLS endpoints/secrets through the
+# deployment platform and must pass Settings.validate_production().
+
+x-api-environment: &api-environment
+  APP_ENVIRONMENT: development
+  TENANT_RLS_MODE: forced
+  DATABASE_URL: postgresql+asyncpg://hr_agent_api_login:${HR_DB_API_PASSWORD:?set HR_DB_API_PASSWORD to 32+ random hex chars}@postgres:5432/recruitment_v2
+  WEB_ORIGIN: http://localhost:3000
+  JWT_SECRET: ${JWT_SECRET:?set an independent 32+ character JWT secret}
+  AUTH_MFA_ENCRYPTION_KEY: ${AUTH_MFA_ENCRYPTION_KEY:?set an independent 32+ character MFA secret}
+  PUBLIC_RATE_LIMIT_BACKEND: valkey
+  PUBLIC_RATE_LIMIT_VALKEY_URL: redis://valkey:6379/0
+  PUBLIC_RATE_LIMIT_HMAC_SECRET: ${PUBLIC_RATE_LIMIT_HMAC_SECRET:?set an independent 32+ character rate-limit secret}
+  BLOB_STORE_BACKEND: s3
+  S3_ENDPOINT: http://minio:9000
+  S3_BUCKET: hr-agent-private
+  S3_PUBLIC_BUCKET: hr-agent-public
+  S3_ACCESS_KEY: ${S3_ACCESS_KEY:?set the MinIO application access key}
+  S3_SECRET_KEY: ${S3_SECRET_KEY:?set the MinIO application secret key}
+  S3_PUBLIC_BASE_URL: http://localhost:9000/hr-agent-public
+  MALWARE_SCANNER_BACKEND: clamav
+  CLAMAV_HOST: clamav
+  CLAMAV_PORT: "3310"
+  INTEGRATION_CREDENTIAL_ENCRYPTION_KEY: ${INTEGRATION_CREDENTIAL_ENCRYPTION_KEY:?set a URL-safe base64 encoded 32-byte key}
+  INTEGRATION_CREDENTIAL_KEY_ID: local-pilot-1
+  INTEGRATION_OAUTH_REDIRECT_ORIGINS: http://localhost:3000
+  HH_USER_AGENT: ${HH_USER_AGENT:-HR-Agent-Pilot/1.0 (operator@example.invalid)}
+  WORKER_READINESS_REQUIRED: "true"
+
+services:
+  postgres:
+    image: postgres:16-alpine@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: recruitment_v2
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set an independent PostgreSQL operator password}
+      HR_DB_API_PASSWORD: ${HR_DB_API_PASSWORD:?set HR_DB_API_PASSWORD to 32+ random hex chars}
+      HR_DB_WORKER_PASSWORD: ${HR_DB_WORKER_PASSWORD:?set HR_DB_WORKER_PASSWORD to 32+ random hex chars}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./ops/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d recruitment_v2"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+
+  valkey:
+    image: valkey/valkey:9.1.0-alpine@sha256:c9b77919daeba2c02ad954d0c844cc4e7142069d177b89c5fd771f405daf9e02
+    restart: unless-stopped
+    command: ["valkey-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    security_opt:
+      - no-new-privileges:true
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-07-23T15-54-02Z@sha256:d249d1fb6966de4d8ad26c04754b545205ff15a62e4fd19ebd0f26fa5baacbc0
+    restart: unless-stopped
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set a MinIO operator access key}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set an independent MinIO operator secret}
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+
+  minio-init:
+    image: quay.io/minio/mc:RELEASE.2025-07-21T05-28-08Z@sha256:fb8f773eac8ef9d6da0486d5dec2f42f219358bcb8de579d1623d518c9ebd4cc
+    restart: "no"
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set a MinIO operator access key}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set an independent MinIO operator secret}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:?set the MinIO application access key}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:?set the MinIO application secret key}
+    volumes:
+      - ./ops/minio:/policies:ro
+    entrypoint: ["/bin/sh", "/policies/bootstrap.sh"]
+    security_opt:
+      - no-new-privileges:true
+
+  clamav:
+    # The official Alpine image is currently amd64-only. Docker Desktop uses
+    # its supported emulation path on Apple Silicon; Linux pilot hosts use
+    # amd64. Pin the current supported 1.4 LTS patch and immutable index digest.
+    image: clamav/clamav:1.4.6@sha256:c3bfbf2a2c9abc1fc179e63832a9e8bfac901ede83853e3fa10acf6f1fb5c803
+    platform: linux/amd64
+    restart: unless-stopped
+    volumes:
+      - clamav_signatures:/var/lib/clamav
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 60s
+    security_opt:
+      - no-new-privileges:true
+
+  migrate:
+    build:
+      context: ./apps/api
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:?set an independent PostgreSQL operator password}@postgres:5432/recruitment_v2
+    command: ["alembic", "upgrade", "head"]
+    healthcheck:
+      disable: true
+    security_opt:
+      - no-new-privileges:true
+
+  api:
+    build:
+      context: ./apps/api
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      minio-init:
+        condition: service_completed_successfully
+      valkey:
+        condition: service_healthy
+      clamav:
+        condition: service_healthy
+    environment: *api-environment
+    ports:
+      - "127.0.0.1:8000:8000"
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+
+  worker:
+    build:
+      context: ./apps/api
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      minio-init:
+        condition: service_completed_successfully
+      valkey:
+        condition: service_healthy
+      clamav:
+        condition: service_healthy
+    environment:
+      <<: *api-environment
+      DATABASE_URL: postgresql+asyncpg://hr_agent_worker_login:${HR_DB_WORKER_PASSWORD:?set HR_DB_WORKER_PASSWORD to 32+ random hex chars}@postgres:5432/recruitment_v2
+    command: ["python", "-m", "app.scripts.run_workers"]
+    healthcheck:
+      disable: true
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+
+  web:
+    build:
+      context: ./apps/web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      AUTH_SECRET: ${AUTH_SECRET:?set a high-entropy Auth.js secret}
+      NEXTAUTH_SECRET: ${AUTH_SECRET:?set a high-entropy Auth.js secret}
+      AUTH_SESSION_SECRET: ${AUTH_SESSION_SECRET:?set an independent session-cookie secret}
+      ASSESSMENT_SESSION_SECRET: ${ASSESSMENT_SESSION_SECRET:?set an independent assessment-session secret}
+      NEXTAUTH_URL: http://localhost:3000
+      API_BASE_URL: http://api:8000
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+    ports:
+      - "127.0.0.1:3000:3000"
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+
+volumes:
+  postgres_data:
+  minio_data:
+  clamav_signatures:

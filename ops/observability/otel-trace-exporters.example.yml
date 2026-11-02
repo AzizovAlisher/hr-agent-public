@@ -1,0 +1,8 @@
+# Copy this file outside the repository, replace the endpoint, add any required
+# authorization headers/TLS material, set mode 0400, and pass its absolute path
+# as HR_AGENT_OTEL_TRACE_EXPORTERS_FILE. The mounted mapping key must stay equal
+# to the pipeline exporter name in otel-collector.yml.
+otlphttp/trace_backend:
+  endpoint: https://traces.example.invalid
+  tls:
+    insecure: false

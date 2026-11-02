@@ -1,0 +1,29 @@
+{
+  "backup_id": "hr-agent-20260822T215415Z-ff3b5026",
+  "database": {
+    "candidate_rls_enabled": true,
+    "candidate_rls_forced": true,
+    "migration_head": "d9f1a3c5e7b2",
+    "organization_count": 1,
+    "required_roles_match": true,
+    "runtime_public_schema_usage": true,
+    "security_schema_owner": "hr_agent_broker",
+    "worker_public_schema_usage": true
+  },
+  "format": "hr-agent-recovery-evidence-v1",
+  "objects": {
+    "bytes": 36472489,
+    "checksums_match": true,
+    "count": 128
+  },
+  "release_revision": "pending-final-head",
+  "rollback_verified": true,
+  "rpo_seconds": 264.748,
+  "rpo_target_seconds": 86400,
+  "rto_seconds": 3.737,
+  "rto_target_seconds": 14400,
+  "status": "pass",
+  "target_database": "hr_minio_restore_20260823",
+  "target_object_kind": "s3",
+  "verified_at": "2026-08-22T21:58:45.340391Z"
+}

@@ -1,0 +1,29 @@
+{
+  "backup_id": "hr-agent-20260822T164308Z-ff3fce78",
+  "database": {
+    "candidate_rls_enabled": true,
+    "candidate_rls_forced": true,
+    "migration_head": "e1b5d7f9a203",
+    "organization_count": 1,
+    "required_roles_match": true,
+    "runtime_public_schema_usage": true,
+    "security_schema_owner": "hr_agent_broker",
+    "worker_public_schema_usage": true
+  },
+  "environment": "local-reference-postgresql-16.13-and-local-object-store",
+  "format": "hr-agent-recovery-evidence-v1",
+  "objects": {
+    "bytes": 2488,
+    "checksums_match": true,
+    "count": 17
+  },
+  "rollback_verified": true,
+  "rpo_seconds": 7.738,
+  "rpo_target_seconds": 86400,
+  "rto_seconds": 2.194,
+  "rto_target_seconds": 14400,
+  "status": "pass",
+  "target_database": "hr_recovery_drill_test",
+  "target_object_kind": "local",
+  "verified_at": "2026-08-22T16:43:18.554762Z"
+}

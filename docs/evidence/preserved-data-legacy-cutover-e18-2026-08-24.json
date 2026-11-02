@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "captured_on": "2026-08-24",
+  "event": "preserved_data_legacy_private_object_cutover",
+  "scope": {
+    "environment": "protected_e18_preview",
+    "migration_head": "e18c4f6a0b32",
+    "original_source_database_targeted": false,
+    "result": "internal_cutover_gate_pass"
+  },
+  "before": {
+    "business_counts": {
+      "candidates_total": 84,
+      "candidates_active": 82,
+      "positions": 105,
+      "scores": 1158,
+      "applications": 1158,
+      "application_stage_events": 1158,
+      "application_evaluations": 2316,
+      "interviews": 17,
+      "candidate_notes": 1,
+      "candidate_activities": 1280
+    },
+    "candidate_business_projection_sha256": "9ace90e32b75d2eadc11776ded64d9820de282dba32bbb98cd803fa2e15763a4",
+    "legacy_references": 62,
+    "private_objects": 0,
+    "legacy_source": {
+      "objects": 69,
+      "bytes": 36467423,
+      "aggregate_sha256": "52b58bde49fc77ee928f0d838fd097315858be0916cb6eb46ce58c591bc7035b",
+      "referenced_objects": 62,
+      "opaque_orphans": {
+        "total": 7,
+        "candidate_cv": 2,
+        "assessment": 5,
+        "paths_recorded": false
+      }
+    },
+    "protected_backups": {
+      "database": {
+        "bytes": 5254998,
+        "sha256": "313f7e77eefdfc433c193d9947bc777c01bbe803610e8d351ffdc8a5b9e461a8",
+        "restore_list_valid": true
+      },
+      "private_file_archive": {
+        "bytes": 32108632,
+        "sha256": "0da22f81bc6585ea66fed950998dfaf46c0218a234b76c673e4ed8aa52459ebf",
+        "archive_list_valid": true
+      }
+    }
+  },
+  "cutover": {
+    "dry_run": {
+      "scanned": 62,
+      "validated": 62,
+      "failed": 0,
+      "source_objects": 69,
+      "opaque_orphans": 7,
+      "pending_deletions": 0
+    },
+    "apply": {
+      "scanned": 62,
+      "migrated": 62,
+      "failed": 0,
+      "source_objects": 69,
+      "opaque_orphans": 7,
+      "pending_deletions": 62
+    },
+    "idempotent_apply_rerun": {
+      "scanned": 0,
+      "failed": 0,
+      "pending_deletions": 62,
+      "duplicate_effects": 0
+    },
+    "post_apply_reconciliation": {
+      "resource_bindings": 62,
+      "private_entries": 62,
+      "quarantine_entries": 0,
+      "unregistered_legacy_references": 0,
+      "registered_references": 62,
+      "ready_private_objects": 62,
+      "object_checksums_match": true,
+      "business_counts_unchanged": true,
+      "candidate_business_projection_sha256": "9ace90e32b75d2eadc11776ded64d9820de282dba32bbb98cd803fa2e15763a4"
+    }
+  },
+  "authorized_api_verification": {
+    "visible_candidates": 82,
+    "file_only_candidate_id": "946cafce-f8a2-446f-a9e6-a3ae11974494",
+    "cv_get_status": 200,
+    "response_bytes": 35898,
+    "response_sha256": "2ac4f6405e3563b095de5b9e07ceb66d6fc90bf7f652e47d3739f095327d7052",
+    "cache_control": "private, no-store, max-age=0",
+    "x_content_type_options": "nosniff",
+    "sensitive_read_audit_events": 1
+  },
+  "post_cutover_backup_and_restore": {
+    "backup_id": "hr-agent-20260824T091529Z-f7d7ce91",
+    "encrypted_archive": {
+      "bytes": 38840965,
+      "sha256": "804da296cd37a9ea82ec81446327aacafa1660b446f191cb31acf28a2d3372f5"
+    },
+    "receipt": {
+      "bytes": 564,
+      "sha256": "0d5a746e02191ab7d6e20134de1eddb07b58af4c9f8cf2e9c4965b8b9314a06f"
+    },
+    "verification": {
+      "database_bytes": 5236065,
+      "objects": 62,
+      "object_bytes": 33463197,
+      "object_checksums_match": true,
+      "rollback_verified": true,
+      "rpo_seconds": 46.885,
+      "rpo_target_seconds": 86400,
+      "rto_seconds": 2.804,
+      "rto_target_seconds": 14400,
+      "status": "pass"
+    }
+  },
+  "source_cleanup_worker": {
+    "claimed": 62,
+    "deleted": 62,
+    "retried": 0,
+    "dead_lettered": 0,
+    "abandoned": 0,
+    "rerun_claimed": 0,
+    "obligations_pending": 0,
+    "obligations_completed": 62,
+    "obligations_failed": 0,
+    "tombstones": 0,
+    "scope": "digest_matched_redundant_sources_only",
+    "canonical_objects_and_backups_retained": true
+  },
+  "post_drain": {
+    "global_dry_run": {
+      "scanned": 0,
+      "failed": 0,
+      "source_objects": 7,
+      "opaque_orphans": 7,
+      "pending_deletions": 0
+    },
+    "opaque_orphans": {
+      "total": 7,
+      "candidate_cv": 2,
+      "assessment": 5,
+      "paths_recorded": false,
+      "adopted_or_deleted": false
+    },
+    "unregistered_references_all_categories": 0,
+    "canonical_verified": 62,
+    "private_entries": 62,
+    "quarantine_entries": 0,
+    "business_counts_unchanged": true,
+    "candidate_business_projection_sha256": "9ace90e32b75d2eadc11776ded64d9820de282dba32bbb98cd803fa2e15763a4"
+  },
+  "verification_suites": {
+    "legacy_cutover_and_adjacent": {
+      "passed": 37,
+      "skipped": 1,
+      "failed": 0
+    },
+    "retention_privacy_and_object_worker": {
+      "passed": 114,
+      "skipped": 1,
+      "failed": 0
+    },
+    "candidate_merge_private_objects": {
+      "passed": 10,
+      "skipped": 0,
+      "failed": 0
+    },
+    "independent_review": "no_material_findings"
+  },
+  "release_caveat": "This evidence closes the preserved-data cutover, retention-tombstone, and candidate-merge gates internally. Exact final-revision CI, Linux WebKit, image/SBOM/signing, live provider certification, credential-incident closure, and named human acceptance remain separate release gates; this record is not a release GO decision."
+}
